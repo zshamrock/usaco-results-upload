@@ -13,15 +13,22 @@ import java.util.stream.Collectors;
 public class HTMLResults {
 
     private final Document document;
-    private final Header header;
     private Element body;
-    private final List<Problem> problems;
+    private Header header;
+    private List<Problem> problems;
 
     public HTMLResults(SourceData source) throws IOException {
         document = source.document();
         body = document.body();
-        header = Patterns.matchesHeader(body.select("h1").first().text());
+        collectHeader();
+        collectProblems();
+    }
 
+    private void collectHeader() {
+        header = Patterns.matchesHeader(body.select("h1").first().text());
+    }
+
+    private void collectProblems() {
         final Element participants = body.select("table").first();
         final List<Element> problemsElements = participants.select("tbody tr").first().select("th[colspan]");
         problems = problemsElements.stream()
