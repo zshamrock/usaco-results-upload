@@ -2,7 +2,8 @@ package by.gsu.dl.usaco.resultsupload;
 
 import by.gsu.dl.usaco.resultsupload.domain.Division;
 import by.gsu.dl.usaco.resultsupload.domain.Header;
-import by.gsu.dl.usaco.resultsupload.exception.IllegalHTMLResultsFormat;
+import by.gsu.dl.usaco.resultsupload.exception.NoMatchesException;
+import by.gsu.dl.usaco.resultsupload.exception.ParsingException;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -18,27 +19,32 @@ import java.util.regex.Pattern;
  * </p>
  */
 public final class Patterns {
-    private static Map<String, Pattern> patterns = new HashMap<>();
+    public static enum Type {
+        HEADER
+    }
+
+    private static final Map<Type, Pattern> PATTERNS = new HashMap<Type, Pattern>() {
+        {
+            put(Type.HEADER, Patterns.headerPattern());
+        }
+    };
 
     public static Header matchesHeader(String header) {
-        return matches(
-                headerPattern(),
+        return matches(Type.HEADER,
                 header,
                 (matcher) -> {
                     final int year = Integer.parseInt(matcher.group(1));
                     final String month = matcher.group(2);
                     final Division division = Division.valueOf(matcher.group(3).toUpperCase());
                     return new Header(year, month, division);
-                },
-                IllegalHTMLResultsFormat.Element.HEADER
+                }
         );
     }
 
-    private static <T> T matches(Pattern pattern,
+    private static <T> T matches(Type type,
                                  String text,
-                                 Function<Matcher, T> factory,
-                                 IllegalHTMLResultsFormat.Element element) {
-        final IllegalHTMLResultsFormat illegalHTMLResultsFormat = new IllegalHTMLResultsFormat(element);
+                                 Function<Matcher, T> factory) {
+        final Pattern pattern = PATTERNS.get(type);
         final Optional<T> result;
         try {
             final Matcher matcher = pattern.matcher(text);
@@ -48,22 +54,20 @@ public final class Patterns {
                 result = Optional.empty();
             }
         } catch (Exception ex) {
-            throw illegalHTMLResultsFormat;
+            throw new ParsingException(ex, type, text, pattern);
         }
-        return result.orElseThrow(() -> illegalHTMLResultsFormat);
+        return result.orElseThrow(() -> new NoMatchesException(type, text, pattern));
     }
 
     // Final Results: USACO 2014 February Contest, Bronze
     private static Pattern headerPattern() {
-        return patterns.computeIfAbsent("header", key -> {
-            final String finalResults = "Final Results:";
-            final String usaco = "USACO";
-            final String year = "(\\d{4})";
-            final String month = "([a-zA-Z]+)";
-            final String contest = "Contest,";
-            final String division = "(Bronze|Silver|Gold)";
-            return composePattern(finalResults, usaco, year, month, contest, division);
-        });
+        final String finalResults = "Final Results:";
+        final String usaco = "USACO";
+        final String year = "(\\d{4})";
+        final String month = "([a-zA-Z]+)";
+        final String contest = "Contest,";
+        final String division = "(Bronze|Silver|Gold)";
+        return composePattern(finalResults, usaco, year, month, contest, division);
     }
 
     private static Pattern composePattern(String... args) {
