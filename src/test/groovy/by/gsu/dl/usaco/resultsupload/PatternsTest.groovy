@@ -6,7 +6,7 @@ import spock.lang.Specification
 class PatternsTest extends Specification {
     def "throw no matches exception"() {
         when:
-        Patterns.matchesHeader("Final Results: USACO 2014 Contest, Bronze");
+        Patterns.matchesContest("Final Results: USACO 2014 Contest, Bronze");
 
         then:
         thrown(NoMatchesException)

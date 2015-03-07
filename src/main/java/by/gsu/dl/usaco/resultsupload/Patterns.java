@@ -1,7 +1,7 @@
 package by.gsu.dl.usaco.resultsupload;
 
+import by.gsu.dl.usaco.resultsupload.domain.Contest;
 import by.gsu.dl.usaco.resultsupload.domain.Division;
-import by.gsu.dl.usaco.resultsupload.domain.Header;
 import by.gsu.dl.usaco.resultsupload.exception.NoMatchesException;
 import by.gsu.dl.usaco.resultsupload.exception.ParsingException;
 
@@ -20,23 +20,23 @@ import java.util.regex.Pattern;
  */
 public final class Patterns {
     public static enum Type {
-        HEADER
+        CONTEST
     }
 
     private static final Map<Type, Pattern> PATTERNS = new HashMap<Type, Pattern>() {
         {
-            put(Type.HEADER, Patterns.headerPattern());
+            put(Type.CONTEST, Patterns.contestPattern());
         }
     };
 
-    public static Header matchesHeader(String header) {
-        return matches(Type.HEADER,
-                header,
+    public static Contest matchesContest(String contest) {
+        return matches(Type.CONTEST,
+                contest,
                 (matcher) -> {
                     final int year = Integer.parseInt(matcher.group(1));
                     final String month = matcher.group(2);
                     final Division division = Division.valueOf(matcher.group(3).toUpperCase());
-                    return new Header(year, month, division);
+                    return new Contest(year, month, division);
                 }
         );
     }
@@ -60,7 +60,7 @@ public final class Patterns {
     }
 
     // Final Results: USACO 2014 February Contest, Bronze
-    private static Pattern headerPattern() {
+    private static Pattern contestPattern() {
         final String finalResults = "Final Results:";
         final String usaco = "USACO";
         final String year = "(\\d{4})";

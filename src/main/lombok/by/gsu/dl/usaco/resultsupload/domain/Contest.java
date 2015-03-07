@@ -3,7 +3,7 @@ package by.gsu.dl.usaco.resultsupload.domain;
 import lombok.Value;
 
 @Value
-public class Header {
+public class Contest {
     int year;
     String month;
     Division division;

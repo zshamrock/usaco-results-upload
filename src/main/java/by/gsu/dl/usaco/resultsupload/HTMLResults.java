@@ -23,55 +23,59 @@ public class HTMLResults {
 
     private final Document document;
     private Element body;
-    private Header header;
+    private Contest contest;
     private List<Problem> problems;
     private List<Participant> participants;
 
     public HTMLResults(SourceData source) throws IOException {
         document = source.document();
         body = document.body();
-        collectHeader();
+        collectContest();
         collectProblems();
         collectParticipants(problems());
     }
 
-    private void collectHeader() {
-        header = Patterns.matchesHeader(body.select("h1").first().text());
+    private void collectContest() {
+        contest = Patterns.matchesContest(body.select("h1").first().text());
     }
 
     private void collectProblems() {
-        final Element participants = body.select("table").first();
-        final List<Element> ths = participants.select("tbody tr").first().select("th[colspan]");
-        problems = ths.stream()
-                .map(th -> new Problem(th.text(), Integer.parseInt(th.attr("colspan")) - 1))
+        final List<Element> headerCells = participantsTable().select("tbody tr").first().select("th[colspan]");
+        problems = headerCells.stream()
+                .map(th -> new Problem(th.text(), Integer.parseInt(th.attr("colspan")) - 1)) // one cell is used for spacing
                 .collect(Collectors.toList());
     }
 
+    private Element participantsTable() {
+        return body.select("table").first();
+    }
+
     private void collectParticipants(List<Problem> problems) {
-        final Elements trs = body.select("table").first().select("tbody tr:gt(0)");
-        participants = trs.stream()
+        final Elements participantsRows = participantsTable().select("tbody tr:gt(0)");
+        participants = participantsRows.stream()
                 .map(tr -> {
-                    final Elements tds = tr.select("td");
+                    final Elements participantsCells = tr.select("td");
                     return Participant.builder()
-                            .country(tds.get(PARTICIPANT_COUNTRY_INDEX).text())
-                            .year(Integer.parseInt(tds.get(PARTICIPANT_YEAR_INDEX).text().replaceAll(NON_BREAKING_SPACE_UNICODE, "").trim()))
-                            .name(tds.get(PARTICIPANT_NAME_INDEX).text())
-                            .score(Integer.parseInt(tds.get(PARTICIPANT_SCORE_INDEX).text()))
+                            .country(participantsCells.get(PARTICIPANT_COUNTRY_INDEX).text())
+                            .year(Integer.parseInt(participantsCells.get(PARTICIPANT_YEAR_INDEX).text()
+                                    .replaceAll(NON_BREAKING_SPACE_UNICODE, "").trim()))
+                            .name(participantsCells.get(PARTICIPANT_NAME_INDEX).text())
+                            .score(Integer.parseInt(participantsCells.get(PARTICIPANT_SCORE_INDEX).text()))
                             .submissions(Collections.<Submission>emptyList())
                             .build();
                 }).collect(Collectors.toList());
     }
 
     public int year() {
-        return header.getYear();
+        return contest.getYear();
     }
 
     public String month() {
-        return header.getMonth();
+        return contest.getMonth();
     }
 
     public Division division() {
-        return header.getDivision();
+        return contest.getDivision();
     }
 
     public List<Problem> problems() {
