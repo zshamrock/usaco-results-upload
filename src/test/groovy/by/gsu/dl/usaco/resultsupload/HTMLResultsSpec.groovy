@@ -1,5 +1,6 @@
 package by.gsu.dl.usaco.resultsupload
 
+import by.gsu.dl.usaco.resultsupload.domain.Submission
 import spock.lang.*
 
 import static by.gsu.dl.usaco.resultsupload.domain.Division.BRONZE
@@ -28,14 +29,15 @@ class HTMLResultsSpec extends Specification {
         def problems = results.problems()
 
         expect:
+        problems.size() == 3
         problems[i].name == name
         problems[i].testsCount == testsCount
 
         where:
-        i || name | testsCount
+        i || name     | testsCount
         0 || "mirror" | 10
-        1 || "auto" | 10
-        2 || "scode" | 9
+        1 || "auto"   | 10
+        2 || "scode"  | 9
     }
 
     def "get all participants"() {
@@ -64,5 +66,28 @@ class HTMLResultsSpec extends Specification {
         141 || "USA"   | 2016 | 533   | "Kevin Lin"
         613 || "USA"   | 2015 | 0     | "Colby Hanley"
         614 || "IRN"   | 2017 | 0     | "Sabaa Karimi"
+    }
+
+    @Unroll
+    def "verify submissions for multiple participants #name"() {
+        setup:
+        def problemsNames = ["mirror", "auto", "scode"]
+        def participants = results.participants()
+
+        expect:
+        participants[i].submissions.size() == 3
+        participants[i].name == name
+        participants[i].submissions.eachWithIndex { submission, index ->
+            assert submission == new Submission(problemsNames[index], submissions[index])
+        }
+
+        where:
+        i   || name            | submissions
+        0   || "Ken Ogura"     | ["**********", "**********", "*********"]
+        1   || "Vasil Sarafov" | ["**********", "**********", "*********"]
+        141 || "Kevin Lin"     | ["*****xxxxx", "*xxxxxxxxx", "*********"]
+        484 || "Roman Kachur"  | ["**t*tttttt", "          ", "         "]
+        613 || "Colby Hanley"  | ["          ", "xxxxxxxxxx", "         "]
+        614 || "Sabaa Karimi"  | ["          ", "xxssssssss", "         "]
     }
 }

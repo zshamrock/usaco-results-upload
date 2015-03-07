@@ -1,11 +1,10 @@
 package by.gsu.dl.usaco.resultsupload.domain;
 
+import lombok.NonNull;
 import lombok.Value;
-
-import java.util.List;
 
 @Value
 public class Submission {
-    String problemName;
-    List<Character> tests;
+    @NonNull String problemName;
+    @NonNull String submission;
 }
