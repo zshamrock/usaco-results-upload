@@ -31,15 +31,35 @@ class HTMLResultsSpec extends Specification {
         problems[i].testsCount == testsCount
 
         where:
-        i || name     | testsCount
+        i || name | testsCount
         0 || "mirror" | 10
-        1 || "auto"   | 10
-        2 || "scode"  | 9
+        1 || "auto" | 10
+        2 || "scode" | 9
     }
 
-    def "get participants"() {
+    def "get all participants"() {
         expect:
         def participants = results.participants()
         participants.size() == 615
+    }
+
+    @Unroll
+    def "verify multiple participants #name"() {
+        setup:
+        def participants = results.participants()
+
+        expect:
+        participants[i].country == country
+        participants[i].year == year
+        participants[i].name == name
+        participants[i].score == score
+
+        where:
+        i   || country | year | score | name
+        0   || "JPN"   | 2015 | 1000  | "Ken Ogura"
+        1   || "BGR"   | 2015 | 1000  | "Vasil Sarafov"
+        141 || "USA"   | 2016 | 533   | "Kevin Lin"
+        613 || "USA"   | 2015 | 0     | "Colby Hanley"
+        614 || "IRN"   | 2017 | 0     | "Sabaa Karimi"
     }
 }
