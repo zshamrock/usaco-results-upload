@@ -1,8 +1,9 @@
 package by.gsu.dl.usaco.resultsupload
 
-import by.gsu.dl.usaco.resultsupload.domain.Division
 import by.gsu.dl.usaco.resultsupload.exception.NoMatchesException
 import spock.lang.Specification
+
+import static by.gsu.dl.usaco.resultsupload.domain.Division.GOLD
 
 class PatternsTest extends Specification {
     def "throw no matches exception"() {
@@ -20,6 +21,6 @@ class PatternsTest extends Specification {
         then:
         contest.year == 2015
         contest.month == "January"
-        contest.division == Division.GOLD
+        contest.division == GOLD
     }
 }

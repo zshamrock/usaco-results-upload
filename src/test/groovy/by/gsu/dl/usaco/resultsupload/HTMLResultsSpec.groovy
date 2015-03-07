@@ -1,7 +1,8 @@
 package by.gsu.dl.usaco.resultsupload
 
-import by.gsu.dl.usaco.resultsupload.domain.Division
 import spock.lang.*
+
+import static by.gsu.dl.usaco.resultsupload.domain.Division.BRONZE
 
 @Stepwise
 class HTMLResultsSpec extends Specification {
@@ -13,7 +14,7 @@ class HTMLResultsSpec extends Specification {
         expect:
         results.year() == 2014
         results.month() == "February"
-        results.division() == Division.BRONZE
+        results.division() == BRONZE
     }
 
     def "verify there are 3 problems"() {
