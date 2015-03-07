@@ -2,7 +2,6 @@ package by.gsu.dl.usaco.resultsupload.domain;
 
 import lombok.Builder;
 import lombok.NonNull;
-import lombok.Singular;
 import lombok.Value;
 
 import java.util.List;
@@ -14,5 +13,5 @@ public class Participant {
     int year;
     @NonNull String name;
     int score;
-    @Singular List<Submission> submissions;
+    List<Submission> submissions;
 }
