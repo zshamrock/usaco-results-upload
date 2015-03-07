@@ -23,8 +23,10 @@ class HTMLResultsSpec extends Specification {
 
     @Unroll
     def "get problem #name"() {
-        expect:
+        setup:
         def problems = results.problems()
+
+        expect:
         problems[i].name == name
         problems[i].testsCount == testsCount
 
@@ -36,8 +38,10 @@ class HTMLResultsSpec extends Specification {
     }
 
     def "get all participants"() {
-        expect:
+        setup:
         def participants = results.participants()
+
+        expect:
         participants.size() == 615
     }
 
