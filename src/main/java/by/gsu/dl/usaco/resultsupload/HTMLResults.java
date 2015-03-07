@@ -1,7 +1,6 @@
 package by.gsu.dl.usaco.resultsupload;
 
 import by.gsu.dl.usaco.resultsupload.domain.*;
-import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
@@ -48,7 +47,6 @@ public class HTMLResults {
     // <td>x</td><td>  </td><td>   </td><td>*</td> <-- extra empty cells between problems submissions
     private static final int EMPTY_CELLS_COUNT_BETWEEN_PROBLEMS_SUBMISSIONS = 2;
 
-    private final Document document;
     private Element body;
     private Contest contest;
     private List<Problem> problems;
@@ -56,8 +54,7 @@ public class HTMLResults {
     private List<Participant> observers;
 
     public HTMLResults(SourceData source) throws IOException {
-        document = source.document();
-        body = document.body();
+        body = source.document().body();
         collectContest();
         collectProblems();
         collectPreCollegeParticipants(problems());
