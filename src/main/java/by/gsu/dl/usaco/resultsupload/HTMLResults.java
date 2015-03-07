@@ -41,15 +41,15 @@ public class HTMLResults {
 
     private void collectProblems() {
         final Element participants = body.select("table").first();
-        final List<Element> problemsElements = participants.select("tbody tr").first().select("th[colspan]");
-        problems = problemsElements.stream()
-                .map(el -> new Problem(el.text(), Integer.parseInt(el.attr("colspan")) - 1))
+        final List<Element> ths = participants.select("tbody tr").first().select("th[colspan]");
+        problems = ths.stream()
+                .map(th -> new Problem(th.text(), Integer.parseInt(th.attr("colspan")) - 1))
                 .collect(Collectors.toList());
     }
 
     private void collectParticipants(List<Problem> problems) {
-        final Elements participantsElements = body.select("table").first().select("tbody tr:gt(0)");
-        participants = participantsElements.stream()
+        final Elements trs = body.select("table").first().select("tbody tr:gt(0)");
+        participants = trs.stream()
                 .map(tr -> {
                     final Elements tds = tr.select("td");
                     return Participant.builder()
