@@ -1,11 +1,9 @@
 package by.gsu.dl.usaco.resultsupload
 
 import by.gsu.dl.usaco.resultsupload.domain.Division
-import spock.lang.Shared
-import spock.lang.Specification
-import spock.lang.Subject
-import spock.lang.Unroll
+import spock.lang.*
 
+@Stepwise
 class HTMLResultsSpec extends Specification {
     @Subject
     @Shared
