@@ -40,18 +40,18 @@ class HTMLResultsSpec extends Specification {
         2 || "scode"  | 9
     }
 
-    def "get all participants"() {
+    def "get all pre-college participants"() {
         setup:
-        def participants = results.participants()
+        def participants = results.preCollegeParticipants()
 
         expect:
         participants.size() == 615
     }
 
     @Unroll
-    def "verify multiple participants #name"() {
+    def "verify multiple pre-college participants #name"() {
         setup:
-        def participants = results.participants()
+        def participants = results.preCollegeParticipants()
 
         expect:
         participants[i].country == country
@@ -69,10 +69,10 @@ class HTMLResultsSpec extends Specification {
     }
 
     @Unroll
-    def "verify submissions for multiple participants #name"() {
+    def "verify submissions for multiple pre-college participants #name"() {
         setup:
         def problemsNames = ["mirror", "auto", "scode"]
-        def participants = results.participants()
+        def participants = results.preCollegeParticipants()
 
         expect:
         participants[i].submissions.size() == 3
@@ -89,5 +89,55 @@ class HTMLResultsSpec extends Specification {
         484 || "Roman Kachur"  | ["**t*tttttt", "          ", "         "]
         613 || "Colby Hanley"  | ["          ", "xxxxxxxxxx", "         "]
         614 || "Sabaa Karimi"  | ["          ", "xxssssssss", "         "]
+    }
+
+    def "get all observers"() {
+        setup:
+        def observers = results.observers()
+
+        expect:
+        observers.size() == 80
+    }
+
+    @Unroll
+    def "verify multiple observers #name"() {
+        setup:
+        def observers = results.observers()
+
+        expect:
+        observers[i].country == country
+        observers[i].year == year
+        observers[i].name == name
+        observers[i].score == score
+
+        where:
+        i   || country | year | score | name
+        0   || "NZL"   | 9999 | 1000  | "Bill Rogers"
+        1   || "RUS"   | 9999 | 1000  | "Nikita Shapovalov"
+        21  || "DEU"   | 9999 | 633   | "Gunnar Birke"
+        78  || "MYS"   | 9999 | 0     | "Ting Le Wei"
+        79  || "BOL"   | 9999 | 0     | "Mauri Wilde"
+    }
+
+    @Unroll
+    def "verify submissions for observers #name"() {
+        setup:
+        def problemsNames = ["mirror", "auto", "scode"]
+        def observers = results.observers()
+
+        expect:
+        observers[i].submissions.size() == 3
+        observers[i].name == name
+        observers[i].submissions.eachWithIndex { submission, index ->
+            assert submission == new Submission(problemsNames[index], submissions[index])
+        }
+
+        where:
+        i  || name                | submissions
+        0  || "Bill Rogers"       | ["**********", "**********", "*********"]
+        1  || "Nikita Shapovalov" | ["**********", "**********", "*********"]
+        21 || "Gunnar Birke"      | ["*******s*s", "*xxxxxxxxx", "*********"]
+        78 || "Ting Le Wei"       | ["cccccccccc", "          ", "         "]
+        79 || "Mauri Wilde"       | ["          ", "tttttttttt", "         "]
     }
 }

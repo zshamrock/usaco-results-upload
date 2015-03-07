@@ -9,18 +9,32 @@ import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static by.gsu.dl.usaco.resultsupload.HTMLResults.ParticipantType.OBSERVER;
+import static by.gsu.dl.usaco.resultsupload.HTMLResults.ParticipantType.PRE_COLLEGE;
+
 /**
  * <p>
  *     <pre>
- * <tr><td>USA</td><td>&nbsp; 2017&nbsp; &nbsp;  </td><td>Peter Wu</td><td>515</td><td>   </td><td>*</td><td>x</td><td>x</td><td>x</td><td>x</td><td>x</td><td>x</td><td>x</td><td>x</td><td>x</td><td>  </td><td>   </td><td>*</td>
+ * <tr><td>USA</td><td>&nbsp; 2017&nbsp; &nbsp;  </td><td>Peter Wu</td><td>515</td><td>   </td><td>*</td><td>x</td><td>x</td><td>x</td><td>x</td><td>x</td><td>x</td><td>x</td><td>x</td><td>x</td><td>  </td><td>   </td><td>*</td>...</tr>
  *          ^                  ^           ^                  ^              ^                       ^                                                                                                        ^
  *         [0]                [1]          |                 [2]            [3]                     [5]                                                                                                       |
  *          |                  | NON_BREAKING_SPACE_UNICODE   |              |                       |                                                                                   EMPTY_CELLS_COUNT_BETWEEN_PROBLEMS_SUBMISSIONS
  * PARTICIPANT_COUNTRY_INDEX PARTICIPANT_NAME_INDEX  PARTICIPANT_NAME_INDEX PARTICIPANT_SCORE_INDEX PARTICIPANT_SUBMISSIONS_START_INDEX
  *     </pre>
  * </p>
+ * <p>
+ *     For Observers we shift index one to the left, as there is no year for Observers,
+ *     except country as it comes before year.
+ * </p>
  */
 public class HTMLResults {
+
+    public static final int OBSERVER_YEAR = 9999;
+
+    static enum ParticipantType {
+        PRE_COLLEGE,
+        OBSERVER
+    }
 
     // see http://en.wikipedia.org/wiki/Latin-1_Supplement_(Unicode_block)
     // unicode value for HTML &nbsp; (is part of LATIN_1_SUPPLEMENT)
@@ -38,14 +52,16 @@ public class HTMLResults {
     private Element body;
     private Contest contest;
     private List<Problem> problems;
-    private List<Participant> participants;
+    private List<Participant> preCollegeParticipants;
+    private List<Participant> observers;
 
     public HTMLResults(SourceData source) throws IOException {
         document = source.document();
         body = document.body();
         collectContest();
         collectProblems();
-        collectParticipants(problems());
+        collectPreCollegeParticipants(problems());
+        collectObservers(problems());
     }
 
     private void collectContest() {
@@ -53,38 +69,67 @@ public class HTMLResults {
     }
 
     private void collectProblems() {
-        final List<Element> headerCells = participantsTable().select("tbody tr").first().select("th[colspan]");
+        final List<Element> headerCells = preCollegeParticipantsTable().select("tbody tr").first().select("th[colspan]");
         problems = headerCells.stream()
                 .map(th -> new Problem(th.text(), Integer.parseInt(th.attr("colspan")) - 1)) // one cell is used for spacing
                 .collect(Collectors.toList());
     }
 
-    private Element participantsTable() {
+    private void collectPreCollegeParticipants(List<Problem> problems) {
+        this.preCollegeParticipants = collectParticipants(preCollegeParticipantsTable(), problems, PRE_COLLEGE);
+    }
+
+    private Element preCollegeParticipantsTable() {
         return body.select("table").first();
     }
 
-    private void collectParticipants(List<Problem> problems) {
-        final Elements participantsRows = participantsTable().select("tbody tr:gt(0)");
-        participants = participantsRows.stream()
+    private void collectObservers(List<Problem> problems) {
+        this.observers = collectParticipants(observersTable(), problems, OBSERVER);
+    }
+
+    private Element observersTable() {
+        return body.select("table").last();
+    }
+
+    private List<Participant> collectParticipants(
+            Element participantsTable, List<Problem> problems, ParticipantType participantType) {
+        final Elements participantsRows = participantsTable.select("tbody tr:gt(0)");
+        return participantsRows.stream()
                 .map(participantRow -> {
                     final Elements participantCells = participantRow.select("td");
+                    int year = participantType == PRE_COLLEGE
+                            ? Integer.parseInt(participantCells.get(PARTICIPANT_YEAR_INDEX).text()
+                                    .replaceAll(NON_BREAKING_SPACE_UNICODE, "").trim())
+                            : OBSERVER_YEAR;
                     return Participant.builder()
                             .country(participantCells.get(PARTICIPANT_COUNTRY_INDEX).text())
-                            .year(Integer.parseInt(participantCells.get(PARTICIPANT_YEAR_INDEX).text()
-                                    .replaceAll(NON_BREAKING_SPACE_UNICODE, "").trim()))
-                            .name(participantCells.get(PARTICIPANT_NAME_INDEX).text())
-                            .score(Integer.parseInt(participantCells.get(PARTICIPANT_SCORE_INDEX).text()))
-                            .submissions(collectSubmissions(participantCells, problems))
+                            .year(year)
+                            .name(participantCells.get(participantNameIndex(participantType)).text())
+                            .score(Integer.parseInt(participantCells.get(participantScoreIndex(participantType)).text()))
+                            .submissions(collectSubmissions(participantCells, problems, participantType))
                             .build();
                 }).collect(Collectors.toList());
     }
 
-    private List<Submission> collectSubmissions(Elements participantCells, List<Problem> problems) {
+    private static int participantNameIndex(ParticipantType participantType) {
+        return participantType == PRE_COLLEGE
+                ? PARTICIPANT_NAME_INDEX
+                : PARTICIPANT_NAME_INDEX - 1;
+    }
+
+    private static int participantScoreIndex(ParticipantType participantType) {
+        return participantType == PRE_COLLEGE
+                ? PARTICIPANT_SCORE_INDEX
+                : PARTICIPANT_SCORE_INDEX - 1;
+    }
+
+    private List<Submission> collectSubmissions(
+            Elements participantCells, List<Problem> problems, ParticipantType participantType) {
         final List<Submission> submissions = new ArrayList<>(problems.size());
         final Deque<int[]> submissionsFromTo = new ArrayDeque<>(problems.size());
         submissionsFromTo.push(new int[] {
-                PARTICIPANT_SUBMISSIONS_START_INDEX,
-                PARTICIPANT_SUBMISSIONS_START_INDEX + problems.get(0).getTestsCount()});
+                participantSubmissionsStartIndex(participantType),
+                participantSubmissionsStartIndex(participantType) + problems.get(0).getTestsCount()});
         problems.stream().skip(1).forEach(problem -> {
             final int lastTo = submissionsFromTo.getLast()[1];
             final int newFrom = lastTo + EMPTY_CELLS_COUNT_BETWEEN_PROBLEMS_SUBMISSIONS; // skipping extra empty cells
@@ -105,6 +150,12 @@ public class HTMLResults {
         return Collections.unmodifiableList(submissions);
     }
 
+    private static int participantSubmissionsStartIndex(ParticipantType participantType) {
+        return participantType == PRE_COLLEGE
+                ? PARTICIPANT_SUBMISSIONS_START_INDEX
+                : PARTICIPANT_SUBMISSIONS_START_INDEX - 1;
+    }
+
     public int year() {
         return contest.getYear();
     }
@@ -121,7 +172,11 @@ public class HTMLResults {
         return problems;
     }
 
-    public List<Participant> participants() {
-        return participants;
+    public List<Participant> preCollegeParticipants() {
+        return preCollegeParticipants;
+    }
+
+    public List<Participant> observers() {
+        return observers;
     }
 }
