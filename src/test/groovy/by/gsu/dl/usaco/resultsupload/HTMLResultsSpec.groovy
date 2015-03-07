@@ -36,4 +36,10 @@ class HTMLResultsSpec extends Specification {
         1 || "auto"   | 10
         2 || "scode"  | 9
     }
+
+    def "get participants"() {
+        expect:
+        def participants = results.participants()
+        participants.size() == 615
+    }
 }
