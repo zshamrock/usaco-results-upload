@@ -1,10 +1,11 @@
 package by.gsu.dl.usaco.resultsupload
 
-import by.gsu.dl.usaco.resultsupload.domain.Problem
 import spock.lang.Narrative
 import spock.lang.Requires
 import spock.lang.Specification
 import spock.lang.Unroll
+
+import by.gsu.dl.usaco.resultsupload.domain.Problem
 
 @Narrative("""
 Try to parse all the online published USACO contest results since November, 2011 till February, 2015.

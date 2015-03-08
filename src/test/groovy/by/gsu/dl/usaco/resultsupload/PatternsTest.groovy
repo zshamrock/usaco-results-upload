@@ -1,10 +1,11 @@
 package by.gsu.dl.usaco.resultsupload
 
-import by.gsu.dl.usaco.resultsupload.exception.NoMatchesException
-import spock.lang.Specification
-
 import static by.gsu.dl.usaco.resultsupload.domain.Division.BRONZE
 import static by.gsu.dl.usaco.resultsupload.domain.Division.GOLD
+
+import spock.lang.Specification
+
+import by.gsu.dl.usaco.resultsupload.exception.NoMatchesException
 
 class PatternsTest extends Specification {
     def "throw no matches exception"() {
