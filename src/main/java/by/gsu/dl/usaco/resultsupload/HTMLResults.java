@@ -54,7 +54,7 @@ public class HTMLResults {
     private List<Participant> observers;
 
     public HTMLResults(SourceData source) throws IOException {
-        body = source.document().body();
+        this.body = source.document().body();
         collectContest();
         collectProblems();
         collectPreCollegeParticipants(problems());
@@ -62,12 +62,12 @@ public class HTMLResults {
     }
 
     private void collectContest() {
-        contest = Patterns.matchesContest(body.select("h1").first().text());
+        this.contest = Patterns.matchesContest(this.body.select("h1").first().text());
     }
 
     private void collectProblems() {
         final List<Element> headerCells = preCollegeParticipantsTable().select("tbody tr").first().select("th[colspan]");
-        problems = headerCells.stream()
+        this.problems = headerCells.stream()
                 .map(th -> new Problem(th.text(), Integer.parseInt(th.attr("colspan")) - 1)) // one cell is used for spacing
                 .collect(Collectors.toList());
     }
@@ -77,7 +77,7 @@ public class HTMLResults {
     }
 
     private Element preCollegeParticipantsTable() {
-        return body.select("table").first();
+        return this.body.select("table").first();
     }
 
     private void collectObservers(List<Problem> problems) {
@@ -85,7 +85,7 @@ public class HTMLResults {
     }
 
     private Element observersTable() {
-        return body.select("table").last();
+        return this.body.select("table").last();
     }
 
     private List<Participant> collectParticipants(
@@ -154,26 +154,26 @@ public class HTMLResults {
     }
 
     public int year() {
-        return contest.getYear();
+        return this.contest.getYear();
     }
 
     public String month() {
-        return contest.getMonth();
+        return this.contest.getMonth();
     }
 
     public Division division() {
-        return contest.getDivision();
+        return this.contest.getDivision();
     }
 
     public List<Problem> problems() {
-        return problems;
+        return this.problems;
     }
 
     public List<Participant> preCollegeParticipants() {
-        return preCollegeParticipants;
+        return this.preCollegeParticipants;
     }
 
     public List<Participant> observers() {
-        return observers;
+        return this.observers;
     }
 }
