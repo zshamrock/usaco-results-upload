@@ -1,11 +1,21 @@
 package by.gsu.dl.usaco.resultsupload;
 
-import by.gsu.dl.usaco.resultsupload.domain.*;
+import by.gsu.dl.usaco.resultsupload.domain.Contest;
+import by.gsu.dl.usaco.resultsupload.domain.Division;
+import by.gsu.dl.usaco.resultsupload.domain.Participant;
+import by.gsu.dl.usaco.resultsupload.domain.Problem;
+import by.gsu.dl.usaco.resultsupload.domain.Submission;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Deque;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Queue;
 import java.util.stream.Collectors;
 
 import static by.gsu.dl.usaco.resultsupload.HTMLResults.ParticipantType.OBSERVER;
