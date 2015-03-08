@@ -66,7 +66,7 @@ public final class Patterns {
         final String year = "(\\d{4})";
         final String month = "([a-zA-Z]+)";
         final String contest = "Contest,";
-        final String division = "(Bronze|Silver|Gold)";
+        final String division = "(Bronze|Silver|Gold)(\\s+Division)?";
         return composePattern(finalResults, usaco, year, month, contest, division);
     }
 

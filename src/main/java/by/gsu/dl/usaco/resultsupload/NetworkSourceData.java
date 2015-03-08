@@ -6,6 +6,8 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
 public class NetworkSourceData implements SourceData {
+    private static final int MAX_BODY_SIZE_5_MB_IN_BYTES = 5 * 1024 * 1024;
+
     private final String url;
 
     public NetworkSourceData(final String url) {
@@ -14,6 +16,6 @@ public class NetworkSourceData implements SourceData {
 
     @Override
     public Document document() throws IOException {
-        return Jsoup.connect(this.url).get();
+        return Jsoup.connect(this.url).maxBodySize(MAX_BODY_SIZE_5_MB_IN_BYTES).get();
     }
 }
