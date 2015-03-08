@@ -1,9 +1,9 @@
 package by.gsu.dl.usaco.resultsupload;
 
+import java.io.IOException;
+
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-
-import java.io.IOException;
 
 public class NetworkSourceData implements SourceData {
     private final String url;

@@ -25,7 +25,7 @@ import by.gsu.dl.usaco.resultsupload.domain.Submission;
 
 /**
  * <p>
- *     <pre>
+ * <pre>
  * <tr><td>USA</td><td>&nbsp; 2017&nbsp; &nbsp;  </td><td>Peter Wu</td><td>515</td><td>   </td><td>*</td><td>x</td><td>x</td><td>x</td><td>x</td><td>x</td><td>x</td><td>x</td><td>x</td><td>x</td><td>  </td><td>   </td><td>*</td>...</tr>
  *          ^                  ^           ^                  ^              ^                       ^                                                                                                        ^
  *         [0]                [1]          |                 [2]            [3]                     [5]                                                                                                       |
@@ -34,8 +34,8 @@ import by.gsu.dl.usaco.resultsupload.domain.Submission;
  *     </pre>
  * </p>
  * <p>
- *     For Observers we shift index one to the left, as there is no year for Observers,
- *     except country as it comes before year.
+ * For Observers we shift index one to the left, as there is no year for Observers,
+ * except country as it comes before year.
  * </p>
  */
 public class HTMLResults {
@@ -108,7 +108,7 @@ public class HTMLResults {
                     final Elements participantCells = participantRow.select("td");
                     final int year = participantType == PRE_COLLEGE
                             ? Integer.parseInt(participantCells.get(PARTICIPANT_YEAR_INDEX).text()
-                                    .replaceAll(NON_BREAKING_SPACE_UNICODE, "").trim())
+                            .replaceAll(NON_BREAKING_SPACE_UNICODE, "").trim())
                             : OBSERVER_YEAR;
                     return Participant.builder()
                             .country(participantCells.get(PARTICIPANT_COUNTRY_INDEX).text())
@@ -136,13 +136,13 @@ public class HTMLResults {
             final Elements participantCells, final List<Problem> problems, final ParticipantType participantType) {
         final List<Submission> submissions = new ArrayList<>(problems.size());
         final Deque<int[]> submissionsFromTo = new ArrayDeque<>(problems.size());
-        submissionsFromTo.push(new int[] {
+        submissionsFromTo.push(new int[]{
                 participantSubmissionsStartIndex(participantType),
                 participantSubmissionsStartIndex(participantType) + problems.get(0).getTestsCount()});
         problems.stream().skip(1).forEach(problem -> {
             final int lastTo = submissionsFromTo.getLast()[1];
             final int newFrom = lastTo + EMPTY_CELLS_COUNT_BETWEEN_PROBLEMS_SUBMISSIONS; // skipping extra empty cells
-            submissionsFromTo.addLast(new int[] {newFrom, newFrom + problem.getTestsCount()});
+            submissionsFromTo.addLast(new int[]{newFrom, newFrom + problem.getTestsCount()});
         });
         final Queue<Problem> problemsQueue = new LinkedList<>(problems);
         submissionsFromTo.stream()
@@ -155,7 +155,6 @@ public class HTMLResults {
                     }
                     submissions.add(new Submission(problemsQueue.poll().getName(), submission));
                 });
-
         return Collections.unmodifiableList(submissions);
     }
 

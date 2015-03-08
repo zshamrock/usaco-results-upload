@@ -1,8 +1,8 @@
 package by.gsu.dl.usaco.resultsupload;
 
-import org.jsoup.nodes.Document;
-
 import java.io.IOException;
+
+import org.jsoup.nodes.Document;
 
 public interface SourceData {
     public Document document() throws IOException;

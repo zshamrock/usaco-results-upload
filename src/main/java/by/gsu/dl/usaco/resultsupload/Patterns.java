@@ -1,10 +1,5 @@
 package by.gsu.dl.usaco.resultsupload;
 
-import by.gsu.dl.usaco.resultsupload.domain.Contest;
-import by.gsu.dl.usaco.resultsupload.domain.Division;
-import by.gsu.dl.usaco.resultsupload.exception.NoMatchesException;
-import by.gsu.dl.usaco.resultsupload.exception.ParsingException;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -12,10 +7,15 @@ import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import by.gsu.dl.usaco.resultsupload.domain.Contest;
+import by.gsu.dl.usaco.resultsupload.domain.Division;
+import by.gsu.dl.usaco.resultsupload.exception.NoMatchesException;
+import by.gsu.dl.usaco.resultsupload.exception.ParsingException;
+
 /**
  * <p>
- *     Read <a href="http://www.martinfowler.com/bliki/ComposedRegex.html">http://www.martinfowler.com/bliki/ComposedRegex.html</a>
- *     about ComposedRegex.
+ * Read <a href="http://www.martinfowler.com/bliki/ComposedRegex.html">http://www.martinfowler.com/bliki/ComposedRegex.html</a>
+ * about ComposedRegex.
  * </p>
  */
 public final class Patterns {

@@ -1,7 +1,11 @@
 package by.gsu.dl.usaco.resultsupload
 
 import by.gsu.dl.usaco.resultsupload.domain.Submission
-import spock.lang.*
+import spock.lang.Shared
+import spock.lang.Specification
+import spock.lang.Stepwise
+import spock.lang.Subject
+import spock.lang.Unroll
 
 import static by.gsu.dl.usaco.resultsupload.domain.Division.BRONZE
 

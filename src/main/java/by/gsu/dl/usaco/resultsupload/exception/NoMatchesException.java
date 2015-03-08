@@ -1,8 +1,8 @@
 package by.gsu.dl.usaco.resultsupload.exception;
 
-import by.gsu.dl.usaco.resultsupload.Patterns;
-
 import java.util.regex.Pattern;
+
+import by.gsu.dl.usaco.resultsupload.Patterns;
 
 public class NoMatchesException extends RuntimeException {
 
