@@ -1,12 +1,9 @@
 package by.gsu.dl.usaco.resultsupload;
 
-import by.gsu.dl.usaco.resultsupload.domain.Contest;
-import by.gsu.dl.usaco.resultsupload.domain.Division;
-import by.gsu.dl.usaco.resultsupload.domain.Participant;
-import by.gsu.dl.usaco.resultsupload.domain.Problem;
-import by.gsu.dl.usaco.resultsupload.domain.Submission;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
+import static by.gsu.dl.usaco.resultsupload.HTMLResults.ParticipantType.OBSERVER;
+import static by.gsu.dl.usaco.resultsupload.HTMLResults.ParticipantType.PRE_COLLEGE;
+import static java.util.stream.Collectors.collectingAndThen;
+import static java.util.stream.Collectors.toList;
 
 import java.io.IOException;
 import java.util.ArrayDeque;
@@ -16,10 +13,15 @@ import java.util.Deque;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
-import java.util.stream.Collectors;
 
-import static by.gsu.dl.usaco.resultsupload.HTMLResults.ParticipantType.OBSERVER;
-import static by.gsu.dl.usaco.resultsupload.HTMLResults.ParticipantType.PRE_COLLEGE;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
+
+import by.gsu.dl.usaco.resultsupload.domain.Contest;
+import by.gsu.dl.usaco.resultsupload.domain.Division;
+import by.gsu.dl.usaco.resultsupload.domain.Participant;
+import by.gsu.dl.usaco.resultsupload.domain.Problem;
+import by.gsu.dl.usaco.resultsupload.domain.Submission;
 
 /**
  * <p>
@@ -79,7 +81,7 @@ public class HTMLResults {
         final List<Element> headerCells = preCollegeParticipantsTable().select("tbody tr").first().select("th[colspan]");
         this.problems = headerCells.stream()
                 .map(th -> new Problem(th.text(), Integer.parseInt(th.attr("colspan")) - 1)) // one cell is used for spacing
-                .collect(Collectors.toList());
+                .collect(collectingAndThen(toList(), Collections::unmodifiableList));
     }
 
     private void collectPreCollegeParticipants(final List<Problem> problems) {
@@ -115,7 +117,7 @@ public class HTMLResults {
                             .score(Integer.parseInt(participantCells.get(participantScoreIndex(participantType)).text()))
                             .submissions(collectSubmissions(participantCells, problems, participantType))
                             .build();
-                }).collect(Collectors.toList());
+                }).collect(collectingAndThen(toList(), Collections::unmodifiableList));
     }
 
     private static int participantNameIndex(final ParticipantType participantType) {
