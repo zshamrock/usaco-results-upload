@@ -80,7 +80,7 @@ public class HTMLResults {
     private void collectProblems() {
         final List<Element> headerCells = preCollegeParticipantsTable().select("tbody tr").first().select("th[colspan]");
         this.problems = headerCells.stream()
-                .map(th -> new Problem(th.text(), Integer.parseInt(th.attr("colspan")) - 1)) // one cell is used for spacing
+                .map(headerCell -> new Problem(headerCell.text(), Integer.parseInt(headerCell.attr("colspan")) - 1)) // one cell is used for spacing
                 .collect(collectingAndThen(toList(), Collections::unmodifiableList));
     }
 
