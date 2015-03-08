@@ -11,7 +11,7 @@ public class FileSourceData implements SourceData {
 
     private final File file;
 
-    public FileSourceData(String pathname) {
+    public FileSourceData(final String pathname) {
         this.file = new File(pathname);
         if (!this.file.exists()) {
             // fail fast

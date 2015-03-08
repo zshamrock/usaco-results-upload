@@ -6,7 +6,7 @@ import java.util.regex.Pattern;
 
 public class NoMatchesException extends RuntimeException {
 
-    public NoMatchesException(Patterns.Type type, String text, Pattern pattern) {
+    public NoMatchesException(final Patterns.Type type, final String text, final Pattern pattern) {
         super(String.format("Failed to match [%s] on %s for %s", text, pattern.pattern(), type));
     }
 }

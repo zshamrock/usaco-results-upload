@@ -8,12 +8,12 @@ import java.io.IOException;
 public class NetworkSourceData implements SourceData {
     private final String url;
 
-    public NetworkSourceData(String url) {
+    public NetworkSourceData(final String url) {
         this.url = url;
     }
 
     @Override
     public Document document() throws IOException {
-        return Jsoup.connect(url).get();
+        return Jsoup.connect(this.url).get();
     }
 }

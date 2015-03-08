@@ -5,7 +5,7 @@ import by.gsu.dl.usaco.resultsupload.Patterns;
 import java.util.regex.Pattern;
 
 public class ParsingException extends RuntimeException {
-    public ParsingException(Exception ex, Patterns.Type type, String text, Pattern pattern) {
+    public ParsingException(final Exception ex, final Patterns.Type type, final String text, final Pattern pattern) {
         super(String.format("Parsing exception [%s] on %s for %s", text, pattern.pattern(), type), ex);
     }
 }

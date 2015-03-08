@@ -29,7 +29,7 @@ public final class Patterns {
         }
     };
 
-    public static Contest matchesContest(String contest) {
+    public static Contest matchesContest(final String contest) {
         return matches(Type.CONTEST,
                 contest,
                 (matcher) -> {
@@ -41,9 +41,9 @@ public final class Patterns {
         );
     }
 
-    private static <T> T matches(Type type,
-                                 String text,
-                                 Function<Matcher, T> factory) {
+    private static <T> T matches(final Type type,
+                                 final String text,
+                                 final Function<Matcher, T> factory) {
         final Pattern pattern = PATTERNS.get(type);
         final Optional<T> result;
         try {
@@ -53,7 +53,7 @@ public final class Patterns {
             } else {
                 result = Optional.empty();
             }
-        } catch (Exception ex) {
+        } catch (final Exception ex) {
             throw new ParsingException(ex, type, text, pattern);
         }
         return result.orElseThrow(() -> new NoMatchesException(type, text, pattern));
@@ -70,7 +70,7 @@ public final class Patterns {
         return composePattern(finalResults, usaco, year, month, contest, division);
     }
 
-    private static Pattern composePattern(String... args) {
+    private static Pattern composePattern(final String... args) {
         final String regex = "^" + String.join("\\s+", args);
         return Pattern.compile(regex);
     }

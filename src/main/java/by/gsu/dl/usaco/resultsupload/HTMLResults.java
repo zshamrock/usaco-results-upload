@@ -53,7 +53,7 @@ public class HTMLResults {
     private List<Participant> preCollegeParticipants;
     private List<Participant> observers;
 
-    public HTMLResults(SourceData source) throws IOException {
+    public HTMLResults(final SourceData source) throws IOException {
         this.body = source.document().body();
         collectContest();
         collectProblems();
@@ -72,7 +72,7 @@ public class HTMLResults {
                 .collect(Collectors.toList());
     }
 
-    private void collectPreCollegeParticipants(List<Problem> problems) {
+    private void collectPreCollegeParticipants(final List<Problem> problems) {
         this.preCollegeParticipants = collectParticipants(preCollegeParticipantsTable(), problems, PRE_COLLEGE);
     }
 
@@ -80,7 +80,7 @@ public class HTMLResults {
         return this.body.select("table").first();
     }
 
-    private void collectObservers(List<Problem> problems) {
+    private void collectObservers(final List<Problem> problems) {
         this.observers = collectParticipants(observersTable(), problems, OBSERVER);
     }
 
@@ -89,12 +89,12 @@ public class HTMLResults {
     }
 
     private List<Participant> collectParticipants(
-            Element participantsTable, List<Problem> problems, ParticipantType participantType) {
+            final Element participantsTable, final List<Problem> problems, final ParticipantType participantType) {
         final Elements participantsRows = participantsTable.select("tbody tr:gt(0)");
         return participantsRows.stream()
                 .map(participantRow -> {
                     final Elements participantCells = participantRow.select("td");
-                    int year = participantType == PRE_COLLEGE
+                    final int year = participantType == PRE_COLLEGE
                             ? Integer.parseInt(participantCells.get(PARTICIPANT_YEAR_INDEX).text()
                                     .replaceAll(NON_BREAKING_SPACE_UNICODE, "").trim())
                             : OBSERVER_YEAR;
@@ -108,20 +108,20 @@ public class HTMLResults {
                 }).collect(Collectors.toList());
     }
 
-    private static int participantNameIndex(ParticipantType participantType) {
+    private static int participantNameIndex(final ParticipantType participantType) {
         return participantType == PRE_COLLEGE
                 ? PARTICIPANT_NAME_INDEX
                 : PARTICIPANT_NAME_INDEX - 1;
     }
 
-    private static int participantScoreIndex(ParticipantType participantType) {
+    private static int participantScoreIndex(final ParticipantType participantType) {
         return participantType == PRE_COLLEGE
                 ? PARTICIPANT_SCORE_INDEX
                 : PARTICIPANT_SCORE_INDEX - 1;
     }
 
     private List<Submission> collectSubmissions(
-            Elements participantCells, List<Problem> problems, ParticipantType participantType) {
+            final Elements participantCells, final List<Problem> problems, final ParticipantType participantType) {
         final List<Submission> submissions = new ArrayList<>(problems.size());
         final Deque<int[]> submissionsFromTo = new ArrayDeque<>(problems.size());
         submissionsFromTo.push(new int[] {
@@ -137,7 +137,7 @@ public class HTMLResults {
                 .map((int[] fromTo) -> participantCells.subList(fromTo[0], fromTo[1]))
                 .forEach((List<Element> cells) -> {
                     String submission = "";
-                    for (Element cell : cells) {
+                    for (final Element cell : cells) {
                         final String text = cell.text();
                         submission += text.isEmpty() ? " " : text;
                     }
@@ -147,7 +147,7 @@ public class HTMLResults {
         return Collections.unmodifiableList(submissions);
     }
 
-    private static int participantSubmissionsStartIndex(ParticipantType participantType) {
+    private static int participantSubmissionsStartIndex(final ParticipantType participantType) {
         return participantType == PRE_COLLEGE
                 ? PARTICIPANT_SUBMISSIONS_START_INDEX
                 : PARTICIPANT_SUBMISSIONS_START_INDEX - 1;
