@@ -2,15 +2,20 @@ package by.gsu.dl.usaco.resultsupload
 
 import by.gsu.dl.usaco.resultsupload.domain.Problem
 import spock.lang.Narrative
+import spock.lang.Requires
 import spock.lang.Specification
 import spock.lang.Unroll
 
 @Narrative("""
 Try to parse all the online published USACO contest results since November, 2011 till February, 2015.
 Verify the problems, pre-college participants, observers for each of the contest.
-As it fetches results from the internet it might take a while for these features to complete.
+
+As it fetches results from the internet it might take a while for these features to complete,
+so these features are disabled by default. In order to enable you need to pass -Dnetworksourced sys property
+to activate it.
 """)
 class NetworkSourcedHTMLResultsSpec extends Specification {
+    @Requires({sys.networksourced})
     @Unroll
     def "process #month #year #division"() {
         setup:
