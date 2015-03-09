@@ -2,9 +2,11 @@ package by.gsu.dl.usaco.resultsupload
 
 import spock.lang.Narrative
 import spock.lang.Requires
+import spock.lang.Shared
 import spock.lang.Specification
 import spock.lang.Unroll
 
+import by.gsu.dl.usaco.resultsupload.domain.Division
 import by.gsu.dl.usaco.resultsupload.domain.Problem
 
 @Narrative("""
@@ -16,6 +18,10 @@ so these features are disabled by default. In order to enable you need to pass -
 to activate it.
 """)
 class NetworkSourcedHTMLResultsSpec extends Specification {
+    @Shared
+    def MONTHS = ['nov': 'November', 'dec': 'December', 'jan': 'January', 'feb': 'February', 'mar': 'March']
+            .asImmutable()
+
     @Requires({sys.networksourced})
     @Unroll
     def "process #month #year #division"() {
@@ -25,6 +31,9 @@ class NetworkSourcedHTMLResultsSpec extends Specification {
         def problems = results.problems()
 
         expect:
+        results.year() == 2000 + (year as int)
+        results.month() == MONTHS[month]
+        results.division() == Division.valueOf(division.toUpperCase())
         problems.size() == expected_problems.size()
         problems.eachWithIndex { problem, index ->
             def expected_problem = expected_problems[index]
