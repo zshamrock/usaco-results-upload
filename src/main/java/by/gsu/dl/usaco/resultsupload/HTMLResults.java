@@ -116,26 +116,26 @@ public class HTMLResults {
                 }).collect(collectingAndThen(toList(), Collections::unmodifiableList));
     }
 
-    private Elements selectParticipantCellsFrom(Element participantRow) {
+    private Elements selectParticipantCellsFrom(final Element participantRow) {
         return participantRow.select("td");
     }
 
-    private String getParticipantCountryFrom(Elements participantCells) {
+    private String getParticipantCountryFrom(final Elements participantCells) {
         return participantCells.get(PARTICIPANT_COUNTRY_INDEX).text();
     }
 
-    private int getParticipantYearFrom(Elements participantCells, ParticipantType participantType) {
+    private int getParticipantYearFrom(final Elements participantCells, final ParticipantType participantType) {
         return participantType == PRE_COLLEGE
                 ? Integer.parseInt(participantCells.get(PARTICIPANT_YEAR_INDEX).text()
                 .replaceAll(NON_BREAKING_SPACE_UNICODE, "").trim())
                 : OBSERVER_YEAR;
     }
 
-    private String getParticipantNameFrom(Elements participantCells, ParticipantType participantType) {
+    private String getParticipantNameFrom(final Elements participantCells, final ParticipantType participantType) {
         return participantCells.get(participantNameIndex(participantType)).text();
     }
 
-    private int getParticipantScoreFrom(Elements participantCells, ParticipantType participantType) {
+    private int getParticipantScoreFrom(final Elements participantCells, final ParticipantType participantType) {
         return Integer.parseInt(participantCells.get(participantScoreIndex(participantType)).text());
     }
 
