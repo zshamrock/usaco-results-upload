@@ -31,7 +31,7 @@ class NetworkSourcedHTMLResultsSpec extends Specification {
         def problems = results.problems()
 
         expect:
-        results.year() == 2000 + (year as int)
+        results.year() == 2000 + year
         results.month() == MONTHS[month]
         results.division() == Division.valueOf(division.toUpperCase())
         problems.size() == expected_problems.size()
