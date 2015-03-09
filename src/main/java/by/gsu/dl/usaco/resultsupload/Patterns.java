@@ -20,12 +20,14 @@ import by.gsu.dl.usaco.resultsupload.exception.ParsingException;
  */
 public final class Patterns {
     public static enum Type {
-        CONTEST
+        CONTEST,
+        ALLOWED_PARTICIPANT_NAME
     }
 
     private static final Map<Type, Pattern> PATTERNS = new HashMap<Type, Pattern>() {
         {
             put(Type.CONTEST, Patterns.contestPattern());
+            put(Type.ALLOWED_PARTICIPANT_NAME, Patterns.allowedParticipantNamePattern());
         }
     };
 
@@ -39,6 +41,10 @@ public final class Patterns {
                     return new Contest(year, month, division);
                 }
         );
+    }
+
+    public static boolean matchesParticipantName(final String participantName) {
+        return participantName.matches(PATTERNS.get(Type.ALLOWED_PARTICIPANT_NAME).pattern());
     }
 
     private static <T> T matches(final Type type,
@@ -73,5 +79,15 @@ public final class Patterns {
     private static Pattern composePattern(final String... args) {
         final String regex = "^" + String.join("\\s+", args);
         return Pattern.compile(regex);
+    }
+
+    private static Pattern allowedParticipantNamePattern() {
+        final String englishLetters = "a-zA-Z";
+        final String russianLetters = "а-яА-Я";
+        final String digits = "0-9";
+        final String symbols = ".\\-";
+        final String space = " ";
+
+        return Pattern.compile("^[" + englishLetters + russianLetters + digits + symbols + space + "]+$");
     }
 }

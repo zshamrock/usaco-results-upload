@@ -13,6 +13,8 @@ import java.util.Deque;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
@@ -41,6 +43,8 @@ import by.gsu.dl.usaco.resultsupload.domain.Submission;
 public class HTMLResults {
 
     public static final int OBSERVER_YEAR = 9999;
+
+    private static final Logger logger = Logger.getLogger(HTMLResults.class.getName());
 
     static enum ParticipantType {
         PRE_COLLEGE,
@@ -104,20 +108,48 @@ public class HTMLResults {
             final Element participantsTable, final List<Problem> problems, final ParticipantType participantType) {
         final Elements participantsRows = participantsTable.select("tbody tr:gt(0)");
         return participantsRows.stream()
+                .filter(participantRow -> {
+                    final Elements participantCells = selectParticipantCellsFrom(participantRow);
+                    final String name = getParticipantNameFrom(participantCells, participantType);
+                    final boolean matches = Patterns.matchesParticipantName(name);
+                    if (!matches) {
+                        logger.log(Level.INFO, String.format("Skipping participant %s\n", name));
+                    }
+                    return matches;
+                })
                 .map(participantRow -> {
-                    final Elements participantCells = participantRow.select("td");
-                    final int year = participantType == PRE_COLLEGE
-                            ? Integer.parseInt(participantCells.get(PARTICIPANT_YEAR_INDEX).text()
-                            .replaceAll(NON_BREAKING_SPACE_UNICODE, "").trim())
-                            : OBSERVER_YEAR;
+                    final Elements participantCells = selectParticipantCellsFrom(participantRow);
                     return Participant.builder()
-                            .country(participantCells.get(PARTICIPANT_COUNTRY_INDEX).text())
-                            .year(year)
-                            .name(participantCells.get(participantNameIndex(participantType)).text())
-                            .score(Integer.parseInt(participantCells.get(participantScoreIndex(participantType)).text()))
+                            .country(getParticipantCountryFrom(participantCells))
+                            .year(getParticipantYearFrom(participantCells, participantType))
+                            .name(getParticipantNameFrom(participantCells, participantType))
+                            .score(getParticipantScoreFrom(participantCells, participantType))
                             .submissions(collectSubmissions(participantCells, problems, participantType))
                             .build();
                 }).collect(collectingAndThen(toList(), Collections::unmodifiableList));
+    }
+
+    private Elements selectParticipantCellsFrom(Element participantRow) {
+        return participantRow.select("td");
+    }
+
+    private String getParticipantCountryFrom(Elements participantCells) {
+        return participantCells.get(PARTICIPANT_COUNTRY_INDEX).text();
+    }
+
+    private int getParticipantYearFrom(Elements participantCells, ParticipantType participantType) {
+        return participantType == PRE_COLLEGE
+                ? Integer.parseInt(participantCells.get(PARTICIPANT_YEAR_INDEX).text()
+                .replaceAll(NON_BREAKING_SPACE_UNICODE, "").trim())
+                : OBSERVER_YEAR;
+    }
+
+    private String getParticipantNameFrom(Elements participantCells, ParticipantType participantType) {
+        return participantCells.get(participantNameIndex(participantType)).text();
+    }
+
+    private int getParticipantScoreFrom(Elements participantCells, ParticipantType participantType) {
+        return Integer.parseInt(participantCells.get(participantScoreIndex(participantType)).text());
     }
 
     private static int participantNameIndex(final ParticipantType participantType) {

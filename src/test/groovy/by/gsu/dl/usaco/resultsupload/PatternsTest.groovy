@@ -35,4 +35,20 @@ class PatternsTest extends Specification {
         contest.month == "November"
         contest.division == BRONZE
     }
+
+    def "verify matches against allowed participant names"() {
+        expect:
+        Patterns.matchesParticipantName(name) == matches
+
+        where:
+        name                     || matches
+        "Pablo Picasso"          || true
+        "Александр Пушкин"       || true
+        "Big Hero 6"             || true
+        "Martin Luther King Jr." || true
+        "Harry"                  || true
+        "Ralph Waldo-Emerson"    || true
+        "Cheshire, cat"          || false
+        "淑涵 秦"                 || false
+    }
 }
