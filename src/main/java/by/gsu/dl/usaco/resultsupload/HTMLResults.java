@@ -13,8 +13,6 @@ import java.util.Deque;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
@@ -43,8 +41,6 @@ import by.gsu.dl.usaco.resultsupload.domain.Submission;
 public class HTMLResults {
 
     public static final int OBSERVER_YEAR = 9999;
-
-    private static final Logger logger = Logger.getLogger(HTMLResults.class.getName());
 
     static enum ParticipantType {
         PRE_COLLEGE,
@@ -108,15 +104,6 @@ public class HTMLResults {
             final Element participantsTable, final List<Problem> problems, final ParticipantType participantType) {
         final Elements participantsRows = participantsTable.select("tbody tr:gt(0)");
         return participantsRows.stream()
-                .filter(participantRow -> {
-                    final Elements participantCells = selectParticipantCellsFrom(participantRow);
-                    final String name = getParticipantNameFrom(participantCells, participantType);
-                    final boolean matches = Patterns.matchesParticipantName(name);
-                    if (!matches) {
-                        logger.log(Level.INFO, String.format("Skipping participant %s\n", name));
-                    }
-                    return matches;
-                })
                 .map(participantRow -> {
                     final Elements participantCells = selectParticipantCellsFrom(participantRow);
                     return Participant.builder()

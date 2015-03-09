@@ -50,7 +50,7 @@ class HTMLResultsSpec extends Specification {
         def participants = results.preCollegeParticipants()
 
         expect:
-        participants.size() == 597
+        participants.size() == 615
     }
 
     @Unroll
@@ -68,9 +68,9 @@ class HTMLResultsSpec extends Specification {
         i   || country | year | score | name
         0   || "JPN"   | 2015 | 1000  | "Ken Ogura"
         1   || "BGR"   | 2015 | 1000  | "Vasil Sarafov"
-        138 || "USA"   | 2016 | 533   | "Kevin Lin"
-        595 || "USA"   | 2015 | 0     | "Colby Hanley"
-        596 || "IRN"   | 2017 | 0     | "Sabaa Karimi"
+        141 || "USA"   | 2016 | 533   | "Kevin Lin"
+        613 || "USA"   | 2015 | 0     | "Colby Hanley"
+        614 || "IRN"   | 2017 | 0     | "Sabaa Karimi"
     }
 
     @Unroll
@@ -90,10 +90,10 @@ class HTMLResultsSpec extends Specification {
         i   || name            | submissions
         0   || "Ken Ogura"     | ["**********", "**********", "*********"]
         1   || "Vasil Sarafov" | ["**********", "**********", "*********"]
-        138 || "Kevin Lin"     | ["*****xxxxx", "*xxxxxxxxx", "*********"]
-        470 || "Roman Kachur"  | ["**t*tttttt", "          ", "         "]
-        595 || "Colby Hanley"  | ["          ", "xxxxxxxxxx", "         "]
-        596 || "Sabaa Karimi"  | ["          ", "xxssssssss", "         "]
+        141 || "Kevin Lin"     | ["*****xxxxx", "*xxxxxxxxx", "*********"]
+        484 || "Roman Kachur"  | ["**t*tttttt", "          ", "         "]
+        613 || "Colby Hanley"  | ["          ", "xxxxxxxxxx", "         "]
+        614 || "Sabaa Karimi"  | ["          ", "xxssssssss", "         "]
     }
 
     def "get all observers"() {
@@ -101,7 +101,7 @@ class HTMLResultsSpec extends Specification {
         def observers = results.observers()
 
         expect:
-        observers.size() == 75
+        observers.size() == 80
     }
 
     @Unroll
@@ -120,8 +120,8 @@ class HTMLResultsSpec extends Specification {
         0   || "NZL"   | 9999 | 1000  | "Bill Rogers"
         1   || "RUS"   | 9999 | 1000  | "Nikita Shapovalov"
         21  || "DEU"   | 9999 | 633   | "Gunnar Birke"
-        73  || "MYS"   | 9999 | 0     | "Ting Le Wei"
-        74  || "BOL"   | 9999 | 0     | "Mauri Wilde"
+        78  || "MYS"   | 9999 | 0     | "Ting Le Wei"
+        79  || "BOL"   | 9999 | 0     | "Mauri Wilde"
     }
 
     @Unroll
@@ -142,7 +142,7 @@ class HTMLResultsSpec extends Specification {
         0  || "Bill Rogers"       | ["**********", "**********", "*********"]
         1  || "Nikita Shapovalov" | ["**********", "**********", "*********"]
         21 || "Gunnar Birke"      | ["*******s*s", "*xxxxxxxxx", "*********"]
-        73 || "Ting Le Wei"       | ["cccccccccc", "          ", "         "]
-        74 || "Mauri Wilde"       | ["          ", "tttttttttt", "         "]
+        78 || "Ting Le Wei"       | ["cccccccccc", "          ", "         "]
+        79 || "Mauri Wilde"       | ["          ", "tttttttttt", "         "]
     }
 }
