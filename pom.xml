@@ -23,6 +23,10 @@
         <groovy.patch.version>${groovy.major.minor.version}.1</groovy.patch.version>
     </properties>
 
+    <scm>
+        <developerConnection>scm:git:ssh://github.com/zshamrock/usaco-results-upload</developerConnection>
+    </scm>
+
     <dependencies>
         <dependency>
             <groupId>org.jsoup</groupId>
@@ -115,6 +119,21 @@
                         <phase>generate-sources</phase>
                         <goals>
                             <goal>delombok</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>com.qulice</groupId>
+                <artifactId>qulice-maven-plugin</artifactId>
+                <version>0.12.1</version>
+                <configuration>
+                    <license>file:${basedir}/LICENSE.txt</license>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <!--<goal>check</goal>-->
                         </goals>
                     </execution>
                 </executions>
