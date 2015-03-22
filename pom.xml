@@ -21,10 +21,11 @@
         <groovy.major.minor.version>2.4</groovy.major.minor.version>
         <spock.version>1.0-groovy-${groovy.major.minor.version}</spock.version>
         <groovy.patch.version>${groovy.major.minor.version}.1</groovy.patch.version>
+        <project.scm.id>github</project.scm.id>
     </properties>
 
     <scm>
-        <developerConnection>scm:git:ssh://github.com/zshamrock/usaco-results-upload</developerConnection>
+        <developerConnection>scm:git:ssh://github.com/usaco-results-upload</developerConnection>
     </scm>
 
     <dependencies>
