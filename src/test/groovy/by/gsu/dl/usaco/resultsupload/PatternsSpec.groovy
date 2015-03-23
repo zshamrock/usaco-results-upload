@@ -7,7 +7,7 @@ import spock.lang.Specification
 
 import by.gsu.dl.usaco.resultsupload.exception.NoMatchesException
 
-class PatternsTest extends Specification {
+class PatternsSpec extends Specification {
     def "throw no matches exception"() {
         when:
         Patterns.matchesContest("Final Results: USACO 2014 Contest, Bronze")

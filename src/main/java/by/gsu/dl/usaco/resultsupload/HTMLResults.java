@@ -2,12 +2,11 @@ package by.gsu.dl.usaco.resultsupload;
 
 import static by.gsu.dl.usaco.resultsupload.HTMLResults.ParticipantType.OBSERVER;
 import static by.gsu.dl.usaco.resultsupload.HTMLResults.ParticipantType.PRE_COLLEGE;
-import static java.util.stream.Collectors.collectingAndThen;
-import static java.util.stream.Collectors.toList;
 
 import java.io.IOException;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Deque;
 import java.util.LinkedList;
@@ -16,6 +15,10 @@ import java.util.Queue;
 
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+
+import com.google.common.base.Function;
+import com.google.common.collect.Collections2;
+import com.google.common.collect.Lists;
 
 import by.gsu.dl.usaco.resultsupload.domain.Contest;
 import by.gsu.dl.usaco.resultsupload.domain.Division;
@@ -79,9 +82,13 @@ public class HTMLResults {
 
     private void collectProblems() {
         final List<Element> headerCells = preCollegeParticipantsTable().select("tbody tr").first().select("th[colspan]");
-        this.problems = headerCells.stream()
-                .map(headerCell -> new Problem(headerCell.text(), Integer.parseInt(headerCell.attr("colspan")) - 1)) // one cell is used for spacing
-                .collect(collectingAndThen(toList(), Collections::unmodifiableList));
+        this.problems = Collections.unmodifiableList(
+                Lists.transform(headerCells, new Function<Element, Problem>() {
+                    @Override
+                    public Problem apply(Element headerCell) {
+                        return new Problem(headerCell.text(), Integer.parseInt(headerCell.attr("colspan")) - 1); // one cell is used for spacing
+                    }
+                }));
     }
 
     private void collectPreCollegeParticipants(final List<Problem> problems) {
@@ -103,17 +110,20 @@ public class HTMLResults {
     private List<Participant> collectParticipants(
             final Element participantsTable, final List<Problem> problems, final ParticipantType participantType) {
         final Elements participantsRows = participantsTable.select("tbody tr:gt(0)");
-        return participantsRows.stream()
-                .map(participantRow -> {
-                    final Elements participantCells = selectParticipantCellsFrom(participantRow);
-                    return Participant.builder()
-                            .country(getParticipantCountryFrom(participantCells))
-                            .year(getParticipantYearFrom(participantCells, participantType))
-                            .name(getParticipantNameFrom(participantCells, participantType))
-                            .score(getParticipantScoreFrom(participantCells, participantType))
-                            .submissions(collectSubmissions(participantCells, problems, participantType))
-                            .build();
-                }).collect(collectingAndThen(toList(), Collections::unmodifiableList));
+        return Collections.unmodifiableList(
+                Lists.transform(participantsRows, new Function<Element, Participant>() {
+                    @Override
+                    public Participant apply(Element participantRow) {
+                        final Elements participantCells = selectParticipantCellsFrom(participantRow);
+                        return Participant.builder()
+                                .country(getParticipantCountryFrom(participantCells))
+                                .year(getParticipantYearFrom(participantCells, participantType))
+                                .name(getParticipantNameFrom(participantCells, participantType))
+                                .score(getParticipantScoreFrom(participantCells, participantType))
+                                .submissions(collectSubmissions(participantCells, problems, participantType))
+                                .build();
+                    }
+                }));
     }
 
     private Elements selectParticipantCellsFrom(final Element participantRow) {
@@ -153,27 +163,34 @@ public class HTMLResults {
 
     private List<Submission> collectSubmissions(
             final Elements participantCells, final List<Problem> problems, final ParticipantType participantType) {
-        final List<Submission> submissions = new ArrayList<>(problems.size());
-        final Deque<int[]> submissionsFromTo = new ArrayDeque<>(problems.size());
+        final List<Submission> submissions = new ArrayList<Submission>(problems.size());
+        final Deque<int[]> submissionsFromTo = new ArrayDeque<int[]>(problems.size());
         submissionsFromTo.push(new int[]{
                 participantSubmissionsStartIndex(participantType),
                 participantSubmissionsStartIndex(participantType) + problems.get(0).getTestsCount()});
-        problems.stream().skip(1).forEach(problem -> {
+        for (int i = 1; i < problems.size(); i++) {
+            if (i == 0) {
+                continue; // skip first
+            }
             final int lastTo = submissionsFromTo.getLast()[1];
             final int newFrom = lastTo + EMPTY_CELLS_COUNT_BETWEEN_PROBLEMS_SUBMISSIONS; // skipping extra empty cells
-            submissionsFromTo.addLast(new int[]{newFrom, newFrom + problem.getTestsCount()});
+            submissionsFromTo.addLast(new int[]{newFrom, newFrom + problems.get(i).getTestsCount()});
+        }
+        final Queue<Problem> problemsQueue = new LinkedList<Problem>(problems);
+        final Collection<List<Element>> participantSubCells = Collections2.transform(submissionsFromTo, new Function<int[], List<Element>>() {
+            @Override
+            public List<Element> apply(int[] fromTo) {
+                return participantCells.subList(fromTo[0], fromTo[1]);
+            }
         });
-        final Queue<Problem> problemsQueue = new LinkedList<>(problems);
-        submissionsFromTo.stream()
-                .map((int[] fromTo) -> participantCells.subList(fromTo[0], fromTo[1]))
-                .forEach((List<Element> cells) -> {
-                    String submission = "";
-                    for (final Element cell : cells) {
-                        final String text = cell.text();
-                        submission += text.isEmpty() ? " " : text;
-                    }
-                    submissions.add(new Submission(problemsQueue.poll().getName(), submission));
-                });
+        for (List<Element> cells : participantSubCells) {
+            String submission = "";
+            for (final Element cell : cells) {
+                final String text = cell.text();
+                submission += text.isEmpty() ? " " : text;
+            }
+            submissions.add(new Submission(problemsQueue.poll().getName(), submission));
+        }
         return Collections.unmodifiableList(submissions);
     }
 

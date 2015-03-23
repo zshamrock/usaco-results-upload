@@ -2,10 +2,11 @@ package by.gsu.dl.usaco.resultsupload;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
-import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import com.google.common.base.Function;
+import com.google.common.base.Optional;
 
 import by.gsu.dl.usaco.resultsupload.domain.Contest;
 import by.gsu.dl.usaco.resultsupload.domain.Division;
@@ -34,13 +35,15 @@ public final class Patterns {
     public static Contest matchesContest(final String contest) {
         return matches(Type.CONTEST,
                 contest,
-                (matcher) -> {
-                    final int year = Integer.parseInt(matcher.group(1));
-                    final String month = matcher.group(2);
-                    final Division division = Division.valueOf(matcher.group(3).toUpperCase());
-                    return new Contest(year, month, division);
-                }
-        );
+                new Function<Matcher, Contest>() {
+                    @Override
+                    public Contest apply(Matcher matcher) {
+                        final int year = Integer.parseInt(matcher.group(1));
+                        final String month = matcher.group(2);
+                        final Division division = Division.valueOf(matcher.group(3).toUpperCase());
+                        return new Contest(year, month, division);
+                    }
+                });
     }
 
     public static boolean matchesParticipantName(final String participantName) {
@@ -57,12 +60,16 @@ public final class Patterns {
             if (matcher.matches()) {
                 result = Optional.of(factory.apply(matcher));
             } else {
-                result = Optional.empty();
+                result = Optional.absent();
             }
         } catch (final Exception ex) {
             throw new ParsingException(ex, type, text, pattern);
         }
-        return result.orElseThrow(() -> new NoMatchesException(type, text, pattern));
+        if (result.isPresent()) {
+            return result.get();
+        } else {
+            throw new NoMatchesException(type, text, pattern);
+        }
     }
 
     // Final Results: USACO 2014 February Contest, Bronze
