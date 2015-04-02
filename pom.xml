@@ -5,7 +5,7 @@
 
     <groupId>by.gsu</groupId>
     <artifactId>dl.usaco</artifactId>
-    <version>1.0.3-SNAPSHOT</version>
+    <version>1.0.3</version>
 
     <packaging>jar</packaging>
 
@@ -25,7 +25,7 @@
     <scm>
         <connection>scm:git:git@github.com:zshamrock/usaco-results-upload.git</connection>
         <developerConnection>scm:git:git@github.com:zshamrock/usaco-results-upload.git</developerConnection>
-        <tag>HEAD</tag>
+        <tag>v1.0.3-trace-support</tag>
     </scm>
 
     <dependencies>
