@@ -10,6 +10,7 @@ import java.util.Collections;
 import java.util.Deque;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Queue;
 
 import org.apache.log4j.Logger;
@@ -75,11 +76,11 @@ public class HTMLResults extends BaseTraceable implements Traceable {
     private List<Participant> observers;
 
     public HTMLResults(final SourceData source) {
-        this(source, Optional.<Trace>absent());
+        this(source, Optional.<Trace>absent(), Locale.getDefault());
     }
 
-    public HTMLResults(final SourceData source, Optional<Trace> trace) {
-        super(trace);
+    public HTMLResults(final SourceData source, final Optional<Trace> trace, final Locale locale) {
+        super(trace, locale);
         try {
             this.body = source.document().body();
             collectContest();
@@ -88,9 +89,9 @@ public class HTMLResults extends BaseTraceable implements Traceable {
             collectObservers(problems());
 
             trace("summary.results", year(), month(), division(), preCollegeParticipants().size(), observers().size());
-        } catch (Exception ex) {
+        } catch (Exception e) {
             trace("error.processing");
-            LOGGER.error("Failed processing HTML results", ex);
+            LOGGER.error("Failed processing HTML results", e);
         }
     }
 

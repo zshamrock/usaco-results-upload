@@ -1,6 +1,7 @@
 package by.gsu.dl.usaco.resultsupload;
 
 import java.io.IOException;
+import java.util.Locale;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -16,8 +17,8 @@ public class NetworkSourceData extends BaseTraceable implements SourceData, Trac
 
     private final String url;
 
-    public NetworkSourceData(final String url, final Optional<Trace> trace) {
-        super(trace);
+    public NetworkSourceData(final String url, final Optional<Trace> trace, final Locale locale) {
+        super(trace, locale);
         this.url = url;
     }
 

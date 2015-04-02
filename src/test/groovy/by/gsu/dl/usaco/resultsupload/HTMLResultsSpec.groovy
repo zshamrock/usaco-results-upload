@@ -18,7 +18,7 @@ class HTMLResultsSpec extends Specification {
     @Subject
     @Shared
     def results = new HTMLResults(new FileSourceData(getClass().getResource("/feb14_bronze.html").file),
-            Optional.of(new InMemoryTrace()))
+            Optional.of(new InMemoryTrace()), new Locale("ru", "RU"))
 
     def "get year, month and division"() {
         expect:

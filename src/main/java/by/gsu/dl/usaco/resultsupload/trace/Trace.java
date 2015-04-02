@@ -6,7 +6,7 @@ import java.util.List;
  * Implementation must be <strong>Thread Safe!</strong>
  */
 public interface Trace {
-    public static final int LATEST_ALL = -1;
+    public static final int LATEST_ALL = -1;        
 
     /**
      * Add messages into the trace log.
