@@ -2,6 +2,8 @@ package by.gsu.dl.usaco.resultsupload
 
 import static by.gsu.dl.usaco.resultsupload.domain.Division.BRONZE
 
+import com.google.common.base.Optional
+
 import spock.lang.Shared
 import spock.lang.Specification
 import spock.lang.Stepwise
@@ -9,12 +11,14 @@ import spock.lang.Subject
 import spock.lang.Unroll
 
 import by.gsu.dl.usaco.resultsupload.domain.Submission
+import by.gsu.dl.usaco.resultsupload.trace.InMemoryTrace
 
 @Stepwise
 class HTMLResultsSpec extends Specification {
     @Subject
     @Shared
-    def results = new HTMLResults(new FileSourceData(getClass().getResource("/feb14_bronze.html").file))
+    def results = new HTMLResults(new FileSourceData(getClass().getResource("/feb14_bronze.html").file),
+            Optional.of(new InMemoryTrace()))
 
     def "get year, month and division"() {
         expect:

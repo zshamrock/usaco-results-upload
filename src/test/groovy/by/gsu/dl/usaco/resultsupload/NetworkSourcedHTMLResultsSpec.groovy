@@ -1,5 +1,7 @@
 package by.gsu.dl.usaco.resultsupload
 
+import com.google.common.base.Optional
+
 import spock.lang.Narrative
 import spock.lang.Requires
 import spock.lang.Shared
@@ -8,6 +10,7 @@ import spock.lang.Unroll
 
 import by.gsu.dl.usaco.resultsupload.domain.Division
 import by.gsu.dl.usaco.resultsupload.domain.Problem
+import by.gsu.dl.usaco.resultsupload.trace.InMemoryTrace
 
 @Narrative("""
 Try to parse all the online published USACO contest results since November, 2011 till February, 2015.
@@ -22,12 +25,12 @@ class NetworkSourcedHTMLResultsSpec extends Specification {
     def MONTHS = ['nov': 'November', 'dec': 'December', 'jan': 'January', 'feb': 'February', 'mar': 'March']
             .asImmutable()
 
-    @Requires({sys.networksourced})
+    @Requires({sys.networksourced}) // run with -Dnetworksourced to enable
     @Unroll
     def "process #month #year #division"() {
         setup:
         def url = "http://www.usaco.org/current/data/${month}${year}_${division}_results.html"
-        def results = new HTMLResults(new NetworkSourceData(url))
+        def results = new HTMLResults(new NetworkSourceData(url, Optional.of(new InMemoryTrace())))
         def problems = results.problems()
 
         expect:

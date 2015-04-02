@@ -3,7 +3,6 @@ package by.gsu.dl.usaco.resultsupload;
 import static by.gsu.dl.usaco.resultsupload.HTMLResults.ParticipantType.OBSERVER;
 import static by.gsu.dl.usaco.resultsupload.HTMLResults.ParticipantType.PRE_COLLEGE;
 
-import java.io.IOException;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -13,10 +12,12 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 
+import org.apache.log4j.Logger;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import com.google.common.base.Function;
+import com.google.common.base.Optional;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.Lists;
 
@@ -25,6 +26,9 @@ import by.gsu.dl.usaco.resultsupload.domain.Division;
 import by.gsu.dl.usaco.resultsupload.domain.Participant;
 import by.gsu.dl.usaco.resultsupload.domain.Problem;
 import by.gsu.dl.usaco.resultsupload.domain.Submission;
+import by.gsu.dl.usaco.resultsupload.trace.BaseTraceable;
+import by.gsu.dl.usaco.resultsupload.trace.Trace;
+import by.gsu.dl.usaco.resultsupload.trace.Traceable;
 
 /**
  * <p>
@@ -41,7 +45,9 @@ import by.gsu.dl.usaco.resultsupload.domain.Submission;
  * except country as it comes before year.
  * </p>
  */
-public class HTMLResults {
+public class HTMLResults extends BaseTraceable implements Traceable {
+
+    private static Logger LOGGER = Logger.getLogger(HTMLResults.class);
 
     public static final int OBSERVER_YEAR = 9999;
 
@@ -68,19 +74,33 @@ public class HTMLResults {
     private List<Participant> preCollegeParticipants;
     private List<Participant> observers;
 
-    public HTMLResults(final SourceData source) throws IOException {
-        this.body = source.document().body();
-        collectContest();
-        collectProblems();
-        collectPreCollegeParticipants(problems());
-        collectObservers(problems());
+    public HTMLResults(final SourceData source) {
+        this(source, Optional.<Trace>absent());
+    }
+
+    public HTMLResults(final SourceData source, Optional<Trace> trace) {
+        super(trace);
+        try {
+            this.body = source.document().body();
+            collectContest();
+            collectProblems();
+            collectPreCollegeParticipants(problems());
+            collectObservers(problems());
+
+            trace("summary.results", year(), month(), division(), preCollegeParticipants().size(), observers().size());
+        } catch (Exception ex) {
+            trace("error.processing");
+            LOGGER.error("Failed processing HTML results", ex);
+        }
     }
 
     private void collectContest() {
+        trace("collecting.contest");
         this.contest = Patterns.matchesContest(this.body.select("h1").first().text());
     }
 
     private void collectProblems() {
+        trace("collecting.problems");
         final List<Element> headerCells = preCollegeParticipantsTable().select("tbody tr").first().select("th[colspan]");
         this.problems = Collections.unmodifiableList(
                 Lists.transform(headerCells, new Function<Element, Problem>() {
@@ -92,6 +112,7 @@ public class HTMLResults {
     }
 
     private void collectPreCollegeParticipants(final List<Problem> problems) {
+        trace("collecting.precollegeparticipants");
         this.preCollegeParticipants = collectParticipants(preCollegeParticipantsTable(), problems, PRE_COLLEGE);
     }
 
@@ -100,6 +121,7 @@ public class HTMLResults {
     }
 
     private void collectObservers(final List<Problem> problems) {
+        trace("collecting.observers");
         this.observers = collectParticipants(observersTable(), problems, OBSERVER);
     }
 
