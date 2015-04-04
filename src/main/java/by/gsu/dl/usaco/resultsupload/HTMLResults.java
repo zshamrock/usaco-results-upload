@@ -14,6 +14,7 @@ import java.util.Locale;
 import java.util.Queue;
 
 import org.apache.log4j.Logger;
+import org.jsoup.HttpStatusException;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
@@ -75,10 +76,6 @@ public class HTMLResults extends BaseTraceable implements Traceable {
     private List<Participant> preCollegeParticipants;
     private List<Participant> observers;
 
-    public HTMLResults(final SourceData source) {
-        this(source, Optional.<Trace>absent(), Locale.getDefault());
-    }
-
     public HTMLResults(final SourceData source, final Optional<Trace> trace, final Locale locale) {
         super(trace, locale);
         try {
@@ -90,7 +87,12 @@ public class HTMLResults extends BaseTraceable implements Traceable {
 
             trace("summary.results", year(), month(), division(), preCollegeParticipants().size(), observers().size());
         } catch (Exception e) {
-            trace("error.processing");
+            if (e instanceof HttpStatusException) {
+                final HttpStatusException httpStatusException = ((HttpStatusException) e);
+                trace("error.http", httpStatusException.getStatusCode(), httpStatusException.getUrl());
+            } else {
+                trace("error.processing");
+            }
             LOGGER.error("Failed processing HTML results", e);
         }
     }

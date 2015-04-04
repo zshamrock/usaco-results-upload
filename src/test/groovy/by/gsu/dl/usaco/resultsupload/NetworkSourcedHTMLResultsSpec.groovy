@@ -11,6 +11,7 @@ import spock.lang.Unroll
 import by.gsu.dl.usaco.resultsupload.domain.Division
 import by.gsu.dl.usaco.resultsupload.domain.Problem
 import by.gsu.dl.usaco.resultsupload.trace.InMemoryTrace
+import by.gsu.dl.usaco.resultsupload.trace.Trace
 
 @Narrative("""
 Try to parse all the online published USACO contest results since November, 2011 till February, 2015.
@@ -22,15 +23,35 @@ to activate it.
 """)
 class NetworkSourcedHTMLResultsSpec extends Specification {
     @Shared
+    private static final Locale LOCALE_RU = new Locale("ru", "RU")
+
+    @Shared
     def MONTHS = ['nov': 'November', 'dec': 'December', 'jan': 'January', 'feb': 'February', 'mar': 'March']
             .asImmutable()
+
+    def "connect to wrong url"() {
+        setup:
+        def trace = new InMemoryTrace()
+        def source = new NetworkSourceData("http://www.usaco.org/current/data/012013_diamond_results.html",
+                Optional.of(trace), LOCALE_RU)
+
+        when:
+        new HTMLResults(source, Optional.of(trace), LOCALE_RU)
+
+        then:
+        def messages = trace.latest(10)
+        messages.size() == 2
+        trace.latest(Trace.LATEST_ALL).isEmpty()
+    }
 
     @Requires({sys.networksourced}) // run with -Dnetworksourced to enable
     @Unroll
     def "process #month #year #division"() {
         setup:
         def url = "http://www.usaco.org/current/data/${month}${year}_${division}_results.html"
-        def results = new HTMLResults(new NetworkSourceData(url, Optional.of(new InMemoryTrace())))
+        def trace = new InMemoryTrace()
+        def results = new HTMLResults(new NetworkSourceData(url, Optional.of(trace), LOCALE_RU),
+                Optional.of(trace), LOCALE_RU)
         def problems = results.problems()
 
         expect:

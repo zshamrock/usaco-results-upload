@@ -23,8 +23,8 @@ public class BaseTraceable implements Traceable {
     public void trace(String message, Object... args) {
         if (trace.isPresent()) {
             if (bundle.containsKey(message)) {
-                trace.get().add(String.format(new String(
-                        bundle.getString(message).getBytes(Charsets.ISO_8859_1), Charsets.UTF_8), args));
+                trace.get().add(String.format(new String(bundle.getString(message).getBytes(Charsets.ISO_8859_1),
+                        Charsets.UTF_8), args));
             }
         }
     }
