@@ -2,10 +2,11 @@ package by.gsu.dl.usaco.resultsupload;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+
+import com.google.common.base.Charsets;
 
 public class FileSourceData implements SourceData {
 
@@ -21,6 +22,6 @@ public class FileSourceData implements SourceData {
 
     @Override
     public Document document() throws IOException {
-        return Jsoup.parse(this.file, StandardCharsets.UTF_8.name());
+        return Jsoup.parse(this.file, Charsets.UTF_8.name());
     }
 }

@@ -3,6 +3,8 @@ package by.gsu.dl.usaco.resultsupload;
 import static by.gsu.dl.usaco.resultsupload.HTMLResults.ParticipantType.OBSERVER;
 import static by.gsu.dl.usaco.resultsupload.HTMLResults.ParticipantType.PRE_COLLEGE;
 
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -15,6 +17,7 @@ import java.util.Queue;
 
 import org.apache.log4j.Logger;
 import org.jsoup.HttpStatusException;
+import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
@@ -71,6 +74,7 @@ public class HTMLResults extends BaseTraceable implements Traceable {
     private static final int EMPTY_CELLS_COUNT_BETWEEN_PROBLEMS_SUBMISSIONS = 2;
 
     private Element body;
+    private Document document;
     private Contest contest;
     private List<Problem> problems;
     private List<Participant> preCollegeParticipants;
@@ -79,7 +83,8 @@ public class HTMLResults extends BaseTraceable implements Traceable {
     public HTMLResults(final SourceData source, final Optional<Trace> trace, final Locale locale) {
         super(trace, locale);
         try {
-            this.body = source.document().body();
+            this.document = source.document();
+            this.body = document.body();
             collectContest();
             collectProblems();
             collectPreCollegeParticipants(problems());
@@ -247,5 +252,14 @@ public class HTMLResults extends BaseTraceable implements Traceable {
 
     public List<Participant> observers() {
         return this.observers;
+    }
+
+    public void saveTo(final String path) throws IOException {
+        final PrintWriter out = new PrintWriter(path);
+        try {
+            out.println(document.outerHtml());
+        } finally {
+            out.close();
+        }
     }
 }
