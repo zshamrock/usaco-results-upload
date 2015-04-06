@@ -6,6 +6,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.google.common.base.Function;
+import com.google.common.base.Joiner;
 import com.google.common.base.Optional;
 
 import by.gsu.dl.usaco.resultsupload.domain.Contest;
@@ -20,6 +21,9 @@ import by.gsu.dl.usaco.resultsupload.exception.ParsingException;
  * </p>
  */
 public final class Patterns {
+
+    private static final Joiner COMPOSE_ARGS_JOINER = Joiner.on("\\s+");
+
     public static enum Type {
         CONTEST,
         ALLOWED_PARTICIPANT_NAME
@@ -84,7 +88,7 @@ public final class Patterns {
     }
 
     private static Pattern composePattern(final String... args) {
-        final String regex = "^" + String.join("\\s+", args);
+        final String regex = "^" + COMPOSE_ARGS_JOINER.join(args);
         return Pattern.compile(regex);
     }
 
