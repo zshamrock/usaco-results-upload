@@ -31,6 +31,7 @@ import by.gsu.dl.usaco.resultsupload.domain.Division;
 import by.gsu.dl.usaco.resultsupload.domain.Participant;
 import by.gsu.dl.usaco.resultsupload.domain.Problem;
 import by.gsu.dl.usaco.resultsupload.domain.Submission;
+import by.gsu.dl.usaco.resultsupload.exception.HTMLResultsCreationException;
 import by.gsu.dl.usaco.resultsupload.trace.BaseTraceable;
 import by.gsu.dl.usaco.resultsupload.trace.Trace;
 import by.gsu.dl.usaco.resultsupload.trace.Traceable;
@@ -83,6 +84,7 @@ public class HTMLResults extends BaseTraceable implements Traceable {
     public HTMLResults(final SourceData source, final Optional<Trace> trace, final Locale locale) {
         super(trace, locale);
         try {
+            LOGGER.info("Getting a document");
             this.document = source.document();
             this.body = document.body();
             collectContest();
@@ -99,6 +101,8 @@ public class HTMLResults extends BaseTraceable implements Traceable {
                 trace("error.processing");
             }
             LOGGER.error("Failed processing HTML results", e);
+
+            throw new HTMLResultsCreationException(e);
         }
     }
 
