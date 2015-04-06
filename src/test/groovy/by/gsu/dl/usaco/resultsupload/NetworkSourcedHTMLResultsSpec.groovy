@@ -10,6 +10,7 @@ import spock.lang.Unroll
 
 import by.gsu.dl.usaco.resultsupload.domain.Division
 import by.gsu.dl.usaco.resultsupload.domain.Problem
+import by.gsu.dl.usaco.resultsupload.exception.HTMLResultsCreationException
 import by.gsu.dl.usaco.resultsupload.trace.InMemoryTrace
 import by.gsu.dl.usaco.resultsupload.trace.Trace
 
@@ -39,6 +40,7 @@ class NetworkSourcedHTMLResultsSpec extends Specification {
         new HTMLResults(source, Optional.of(trace), LOCALE_RU)
 
         then:
+        thrown(HTMLResultsCreationException)
         def messages = trace.latest(10)
         messages.size() == 2
         trace.latest(Trace.LATEST_ALL).isEmpty()
