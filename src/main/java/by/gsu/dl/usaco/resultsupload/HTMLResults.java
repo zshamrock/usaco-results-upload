@@ -238,6 +238,9 @@ public class HTMLResults extends BaseTraceable implements Traceable {
         return this.contest.getYear();
     }
 
+    /**
+     * @return either month as it is (like January), or US Open (which is usually April)
+     */
     public String month() {
         return this.contest.getMonth();
     }

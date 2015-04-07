@@ -24,6 +24,10 @@ public final class Patterns {
 
     private static final Joiner COMPOSE_ARGS_JOINER = Joiner.on("\\s+");
 
+    private static final String YEAR_GROUP = "year";
+    private static final String MONTH_GROUP = "month";
+    private static final String DIVISION_GROUP = "division";
+
     public static enum Type {
         CONTEST,
         ALLOWED_PARTICIPANT_NAME
@@ -42,9 +46,9 @@ public final class Patterns {
                 new Function<Matcher, Contest>() {
                     @Override
                     public Contest apply(Matcher matcher) {
-                        final int year = Integer.parseInt(matcher.group(1));
-                        final String month = matcher.group(2);
-                        final Division division = Division.valueOf(matcher.group(3).toUpperCase());
+                        final int year = Integer.parseInt(matcher.group(YEAR_GROUP));
+                        final String month = matcher.group(MONTH_GROUP);
+                        final Division division = Division.valueOf(matcher.group(DIVISION_GROUP).toUpperCase());
                         return new Contest(year, month, division);
                     }
                 });
@@ -77,14 +81,15 @@ public final class Patterns {
     }
 
     // Final Results: USACO 2014 February Contest, Bronze
+    // or in case of US Open which happens in April
+    // Final Results: USACO 2014 US Open, Gold
     private static Pattern contestPattern() {
         final String finalResults = "Final Results:";
         final String usaco = "USACO";
-        final String year = "(\\d{4})";
-        final String month = "([a-zA-Z]+)";
-        final String contest = "Contest,";
-        final String division = "(Bronze|Silver|Gold)(\\s+Division)?";
-        return composePattern(finalResults, usaco, year, month, contest, division);
+        final String year = String.format("(?<%s>\\d{4})", YEAR_GROUP); // ?<name> is a named capturing group
+        final String month = String.format("(?<%s>January|February|March|April|May|June|July|August|September|October|November|December|US Open)(?:\\s+Contest)?,", MONTH_GROUP);
+        final String division = String.format("(?<%s>Bronze|Silver|Gold)(?:\\s+Division)?", DIVISION_GROUP);
+        return composePattern(finalResults, usaco, year, month, division);
     }
 
     private static Pattern composePattern(final String... args) {

@@ -26,6 +26,16 @@ class PatternsSpec extends Specification {
         contest.division == GOLD
     }
 
+    def "matches US Open"() {
+        setup:
+        def contest = Patterns.matchesContest("Final Results: USACO 2014 US Open, Gold")
+
+        expect:
+        contest.year == 2014
+        contest.month == "US Open"
+        contest.division == GOLD
+    }
+
     def "matches contest with division word"() {
         setup:
         def contest = Patterns.matchesContest("Final Results: USACO 2011 November Contest, Bronze Division")
@@ -34,6 +44,16 @@ class PatternsSpec extends Specification {
         contest.year == 2011
         contest.month == "November"
         contest.division == BRONZE
+    }
+
+    def "matches US Open with division word"() {
+        setup:
+        def contest = Patterns.matchesContest("Final Results: USACO 2011 US Open, Gold Division")
+
+        expect:
+        contest.year == 2011
+        contest.month == "US Open"
+        contest.division == GOLD
     }
 
     def "verify matches against allowed participant names"() {
