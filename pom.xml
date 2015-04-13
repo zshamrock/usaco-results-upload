@@ -73,6 +73,16 @@
     </dependencies>
 
     <build>
+        <!--<pluginManagement>-->
+            <!--<plugins>-->
+                <!--&lt;!&ndash; Check http://www.qulice.com/quality.html&ndash;&gt;-->
+                <!--<plugin>-->
+                    <!--<groupId>org.codehaus.mojo</groupId>-->
+                    <!--<artifactId>cobertura-maven-plugin</artifactId>-->
+                    <!--<version>2.5.1</version>-->
+                <!--</plugin>-->
+            <!--</plugins>-->
+        <!--</pluginManagement>-->
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -146,6 +156,7 @@
                 <executions>
                     <execution>
                         <goals>
+                            <!--<goal>instrument</goal> &lt;!&ndash; Enable Cobertura coverage&ndash;&gt;-->
                             <!--<goal>check</goal>-->
                         </goals>
                     </execution>
