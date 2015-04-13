@@ -26,8 +26,8 @@ class NetworkSourcedHTMLResultsSpec extends Specification {
     private static final Locale LOCALE_RU = new Locale("ru", "RU")
 
     @Shared
-    def MONTHS = ['nov': 'November', 'dec': 'December', 'jan': 'January', 'feb': 'February', 'mar': 'March', 'open': 'US Open']
-            .asImmutable()
+    def MONTHS = ['nov': 'November', 'dec': 'December', 'jan': 'January', 'feb': 'February', 'mar': 'March',
+                  'open': 'US Open'].asImmutable()
 
     def "connect to wrong url"() {
         setup:
@@ -152,5 +152,9 @@ class NetworkSourcedHTMLResultsSpec extends Specification {
         "feb"  | 15   | "bronze" || 304         | 73        | [["censor", 15], ["cow", 10], ["hopscotch", 15]]
         "feb"  | 15   | "silver" || 116         | 30        | [["censor", 15], ["hopscotch", 15], ["superbull", 10]]
         "feb"  | 15   | "gold"   || 250         | 71        | [["hopscotch", 15], ["censor", 15], ["fencing", 15]]
+
+        "open" | 15   | "bronze" || 42          | 12        | [["moocrypt", 15], ["geteven", 10], ["trapped", 15], ["palpath", 12]]
+        "open" | 15   | "silver" || 54          | 11        | [["bgm", 10], ["trapped", 14], ["buffet", 15]]
+        "open" | 15   | "gold"   || 38          | 12        | [["googol", 15], ["palpath", 12], ["trapped", 15]]
     }
 }
