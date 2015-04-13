@@ -41,7 +41,7 @@ public final class Patterns {
                 contest,
                 new Function<Matcher, Contest>() {
                     @Override
-                    public Contest apply(Matcher matcher) {
+                    public Contest apply(final Matcher matcher) {
                         final int year = Integer.parseInt(matcher.group(1));
                         final String month = matcher.group(2);
                         final Division division = Division.valueOf(matcher.group(3).toUpperCase());

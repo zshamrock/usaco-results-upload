@@ -14,23 +14,23 @@ public class BaseTraceable implements Traceable {
     private final Optional<Trace> trace;
     private final ResourceBundle bundle;
 
-    public BaseTraceable(final Optional<Trace> trace, Locale locale) {
+    public BaseTraceable(final Optional<Trace> trace, final Locale locale) {
         this.bundle = ResourceBundle.getBundle(BUNDLE_NAME, locale);
         this.trace = trace;
     }
 
     @Override
-    public void trace(String message, Object... args) {
-        if (trace.isPresent()) {
-            if (bundle.containsKey(message)) {
-                trace.get().add(String.format(new String(bundle.getString(message).getBytes(Charsets.ISO_8859_1),
+    public void trace(final String message, final Object... args) {
+        if (this.trace.isPresent()) {
+            if (this.bundle.containsKey(message)) {
+                this.trace.get().add(String.format(new String(this.bundle.getString(message).getBytes(Charsets.ISO_8859_1),
                         Charsets.UTF_8), args));
             }
         }
     }
 
     @Override
-    public void trace(String message) {
-        trace(message, NO_ARGS);
+    public void trace(final String message) {
+        this.trace(message, NO_ARGS);
     }
 }

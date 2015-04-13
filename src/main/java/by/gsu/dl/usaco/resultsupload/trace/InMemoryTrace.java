@@ -8,18 +8,18 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class InMemoryTrace implements Trace {
 
-    private Queue<String> queue = new ConcurrentLinkedQueue<String>();
+    private final Queue<String> queue = new ConcurrentLinkedQueue<String>();
 
     @Override
-    public void add(String... messages) {
-        queue.addAll(Arrays.asList(messages));
+    public void add(final String... messages) {
+        this.queue.addAll(Arrays.asList(messages));
     }
 
     @Override
-    public List<String> latest(int n) {
-        List<String> latestN = new ArrayList<String>();
-        while (!queue.isEmpty()) {
-            final String message = queue.poll();
+    public List<String> latest(final int n) {
+        final List<String> latestN = new ArrayList<String>();
+        while (!this.queue.isEmpty()) {
+            final String message = this.queue.poll();
             if (message != null) {
                 latestN.add(message);
             }

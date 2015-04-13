@@ -1,8 +1,5 @@
 package by.gsu.dl.usaco.resultsupload;
 
-import static by.gsu.dl.usaco.resultsupload.HTMLResults.ParticipantType.OBSERVER;
-import static by.gsu.dl.usaco.resultsupload.HTMLResults.ParticipantType.PRE_COLLEGE;
-
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayDeque;
@@ -50,10 +47,12 @@ import by.gsu.dl.usaco.resultsupload.trace.Traceable;
  * For Observers we shift index one to the left, as there is no year for Observers,
  * except country as it comes before year.
  * </p>
+ *
+ * @checkstyle JavadocVariable
  */
 public class HTMLResults extends BaseTraceable implements Traceable {
 
-    private static Logger LOGGER = Logger.getLogger(HTMLResults.class);
+    private static final Logger LOGGER = Logger.getLogger(HTMLResults.class);
 
     public static final int OBSERVER_YEAR = 9999;
 
@@ -81,80 +80,91 @@ public class HTMLResults extends BaseTraceable implements Traceable {
     private List<Participant> preCollegeParticipants;
     private List<Participant> observers;
 
+    /**
+     * @checkstyle IllegalCatch
+     */
     public HTMLResults(final SourceData source, final Optional<Trace> trace, final Locale locale) {
         super(trace, locale);
         try {
             LOGGER.info("Getting a document");
             this.document = source.document();
-            this.body = document.body();
-            collectContest();
-            collectProblems();
-            collectPreCollegeParticipants(problems());
-            collectObservers(problems());
-
-            trace("summary.results", year(), month(), division(), preCollegeParticipants().size(), observers().size());
-        } catch (Exception e) {
-            if (e instanceof HttpStatusException) {
-                final HttpStatusException httpStatusException = ((HttpStatusException) e);
+            this.body = this.document.body();
+            this.collectData();
+            trace("summary.results", this.year(), this.month(), this.division(), this.preCollegeParticipants().size(),
+                    this.observers().size());
+        } catch (final Exception ex) {
+            if (ex instanceof HttpStatusException) {
+                final HttpStatusException httpStatusException = (HttpStatusException) ex;
                 trace("error.http", httpStatusException.getStatusCode(), httpStatusException.getUrl());
             } else {
                 trace("error.processing");
             }
-            LOGGER.error("Failed processing HTML results", e);
+            LOGGER.error("Failed processing HTML results", ex);
 
-            throw new HTMLResultsCreationException(e);
+            throw new HTMLResultsCreationException(ex);
         }
     }
 
+    private void collectData() {
+        // Order of calls is important!
+        // We could pragmatically enforce and check it via internal state machine, but is it worth it?
+        // Could be done as an improvement.
+        this.collectContest();
+        this.collectProblems();
+        this.collectPreCollegeParticipants();
+        this.collectObservers();
+    }
+
     private void collectContest() {
-        trace("collecting.contest");
+        this.trace("collecting.contest");
         this.contest = Patterns.matchesContest(this.body.select("h1").first().text());
     }
 
     private void collectProblems() {
-        trace("collecting.problems");
-        final List<Element> headerCells = preCollegeParticipantsTable().select("tbody tr").first().select("th[colspan]");
+        this.trace("collecting.problems");
+        final List<Element> headerCells = this.preCollegeParticipantsTable().select("tbody tr").first().select("th[colspan]");
         this.problems = Collections.unmodifiableList(
                 Lists.transform(headerCells, new Function<Element, Problem>() {
                     @Override
-                    public Problem apply(Element headerCell) {
+                    public Problem apply(final Element headerCell) {
                         return new Problem(headerCell.text(), Integer.parseInt(headerCell.attr("colspan")) - 1); // one cell is used for spacing
                     }
                 }));
     }
 
-    private void collectPreCollegeParticipants(final List<Problem> problems) {
-        trace("collecting.precollegeparticipants");
-        this.preCollegeParticipants = collectParticipants(preCollegeParticipantsTable(), problems, PRE_COLLEGE);
+    private void collectPreCollegeParticipants() {
+        this.trace("collecting.precollegeparticipants");
+        this.preCollegeParticipants = this.collectParticipants(this.preCollegeParticipantsTable(),
+                ParticipantType.PRE_COLLEGE);
     }
 
     private Element preCollegeParticipantsTable() {
         return this.body.select("table").first();
     }
 
-    private void collectObservers(final List<Problem> problems) {
-        trace("collecting.observers");
-        this.observers = collectParticipants(observersTable(), problems, OBSERVER);
+    private void collectObservers() {
+        this.trace("collecting.observers");
+        this.observers = this.collectParticipants(this.observersTable(), ParticipantType.OBSERVER);
     }
 
     private Element observersTable() {
         return this.body.select("table").last();
     }
 
-    private List<Participant> collectParticipants(
-            final Element participantsTable, final List<Problem> problems, final ParticipantType participantType) {
+    private List<Participant> collectParticipants(final Element participantsTable,
+                                                  final ParticipantType participantType) {
         final Elements participantsRows = participantsTable.select("tbody tr:gt(0)");
         return Collections.unmodifiableList(
                 Lists.transform(participantsRows, new Function<Element, Participant>() {
                     @Override
-                    public Participant apply(Element participantRow) {
-                        final Elements participantCells = selectParticipantCellsFrom(participantRow);
+                    public Participant apply(final Element participantRow) {
+                        final Elements participantCells = HTMLResults.this.selectParticipantCellsFrom(participantRow);
                         return Participant.builder()
-                                .country(getParticipantCountryFrom(participantCells))
-                                .year(getParticipantYearFrom(participantCells, participantType))
-                                .name(getParticipantNameFrom(participantCells, participantType))
-                                .score(getParticipantScoreFrom(participantCells, participantType))
-                                .submissions(collectSubmissions(participantCells, problems, participantType))
+                                .country(HTMLResults.this.getParticipantCountryFrom(participantCells))
+                                .year(HTMLResults.this.getParticipantYearFrom(participantCells, participantType))
+                                .name(HTMLResults.this.getParticipantNameFrom(participantCells, participantType))
+                                .score(HTMLResults.this.getParticipantScoreFrom(participantCells, participantType))
+                                .submissions(HTMLResults.this.collectSubmissions(participantCells, participantType))
                                 .build();
                     }
                 }));
@@ -169,7 +179,7 @@ public class HTMLResults extends BaseTraceable implements Traceable {
     }
 
     private int getParticipantYearFrom(final Elements participantCells, final ParticipantType participantType) {
-        return participantType == PRE_COLLEGE
+        return participantType == ParticipantType.PRE_COLLEGE
                 ? Integer.parseInt(participantCells.get(PARTICIPANT_YEAR_INDEX).text()
                 .replaceAll(NON_BREAKING_SPACE_UNICODE, "").trim())
                 : OBSERVER_YEAR;
@@ -184,40 +194,40 @@ public class HTMLResults extends BaseTraceable implements Traceable {
     }
 
     private static int participantNameIndex(final ParticipantType participantType) {
-        return participantType == PRE_COLLEGE
+        return participantType == ParticipantType.PRE_COLLEGE
                 ? PARTICIPANT_NAME_INDEX
                 : PARTICIPANT_NAME_INDEX - 1;
     }
 
     private static int participantScoreIndex(final ParticipantType participantType) {
-        return participantType == PRE_COLLEGE
+        return participantType == ParticipantType.PRE_COLLEGE
                 ? PARTICIPANT_SCORE_INDEX
                 : PARTICIPANT_SCORE_INDEX - 1;
     }
 
     private List<Submission> collectSubmissions(
-            final Elements participantCells, final List<Problem> problems, final ParticipantType participantType) {
-        final List<Submission> submissions = new ArrayList<Submission>(problems.size());
-        final Deque<int[]> submissionsFromTo = new ArrayDeque<int[]>(problems.size());
+            final Elements participantCells, final ParticipantType participantType) {
+        final List<Submission> submissions = new ArrayList<Submission>(this.problems.size());
+        final Deque<int[]> submissionsFromTo = new ArrayDeque<int[]>(this.problems.size());
         submissionsFromTo.push(new int[]{
                 participantSubmissionsStartIndex(participantType),
-                participantSubmissionsStartIndex(participantType) + problems.get(0).getTestsCount()});
-        for (int i = 1; i < problems.size(); i++) {
+                participantSubmissionsStartIndex(participantType) + this.problems.get(0).getTestsCount()});
+        for (int i = 1; i < this.problems.size(); i++) {
             if (i == 0) {
                 continue; // skip first
             }
             final int lastTo = submissionsFromTo.getLast()[1];
             final int newFrom = lastTo + EMPTY_CELLS_COUNT_BETWEEN_PROBLEMS_SUBMISSIONS; // skipping extra empty cells
-            submissionsFromTo.addLast(new int[]{newFrom, newFrom + problems.get(i).getTestsCount()});
+            submissionsFromTo.addLast(new int[]{newFrom, newFrom + this.problems.get(i).getTestsCount()});
         }
-        final Queue<Problem> problemsQueue = new LinkedList<Problem>(problems);
+        final Queue<Problem> problemsQueue = new LinkedList<Problem>(this.problems);
         final Collection<List<Element>> participantSubCells = Collections2.transform(submissionsFromTo, new Function<int[], List<Element>>() {
             @Override
-            public List<Element> apply(int[] fromTo) {
+            public List<Element> apply(final int[] fromTo) {
                 return participantCells.subList(fromTo[0], fromTo[1]);
             }
         });
-        for (List<Element> cells : participantSubCells) {
+        for (final List<Element> cells : participantSubCells) {
             String submission = "";
             for (final Element cell : cells) {
                 final String text = cell.text();
@@ -229,7 +239,7 @@ public class HTMLResults extends BaseTraceable implements Traceable {
     }
 
     private static int participantSubmissionsStartIndex(final ParticipantType participantType) {
-        return participantType == PRE_COLLEGE
+        return participantType == ParticipantType.PRE_COLLEGE
                 ? PARTICIPANT_SUBMISSIONS_START_INDEX
                 : PARTICIPANT_SUBMISSIONS_START_INDEX - 1;
     }
@@ -264,7 +274,7 @@ public class HTMLResults extends BaseTraceable implements Traceable {
     public void saveTo(final String path) throws IOException {
         final PrintWriter out = new PrintWriter(path);
         try {
-            out.println(document.outerHtml());
+            out.println(this.document.outerHtml());
         } finally {
             out.close();
         }

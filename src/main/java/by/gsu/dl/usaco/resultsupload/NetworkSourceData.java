@@ -24,7 +24,7 @@ public class NetworkSourceData extends BaseTraceable implements SourceData, Trac
 
     @Override
     public Document document() throws IOException {
-        trace("reading.document", url);
+        this.trace("reading.document", this.url);
         return Jsoup.connect(this.url).maxBodySize(MAX_BODY_SIZE_5_MB_IN_BYTES).get();
     }
 }
