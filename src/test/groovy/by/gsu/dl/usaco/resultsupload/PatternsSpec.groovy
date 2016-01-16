@@ -2,6 +2,7 @@ package by.gsu.dl.usaco.resultsupload
 
 import static by.gsu.dl.usaco.resultsupload.domain.Division.BRONZE
 import static by.gsu.dl.usaco.resultsupload.domain.Division.GOLD
+import static by.gsu.dl.usaco.resultsupload.domain.Division.PLATINUM
 
 import spock.lang.Specification
 
@@ -24,6 +25,16 @@ class PatternsSpec extends Specification {
         contest.year == 2015
         contest.month == "January"
         contest.division == GOLD
+    }
+
+    def "matches new platinum division"() {
+        setup:
+        def contest = Patterns.matchesContest("Final Results: USACO 2015 December Contest, Platinum")
+
+        expect:
+        contest.year == 2015
+        contest.month == "December"
+        contest.division == PLATINUM
     }
 
     def "matches US Open"() {

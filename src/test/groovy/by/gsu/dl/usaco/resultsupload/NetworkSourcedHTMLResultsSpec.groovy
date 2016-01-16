@@ -156,5 +156,10 @@ class NetworkSourcedHTMLResultsSpec extends Specification {
         "open" | 15   | "bronze" || 42          | 12        | [["moocrypt", 15], ["geteven", 10], ["trapped", 15], ["palpath", 12]]
         "open" | 15   | "silver" || 54          | 11        | [["bgm", 10], ["trapped", 14], ["buffet", 15]]
         "open" | 15   | "gold"   || 38          | 12        | [["googol", 15], ["palpath", 12], ["trapped", 15]]
+
+        "dec"  | 15   | "bronze"  || 1265       | 343       | [["paint", 10], ["speeding", 10], ["badmilk", 10]]
+        "dec"  | 15   | "silver"  || 653        | 227       | [["lightson", 15], ["highcard", 15], ["bcount", 15]]
+        "dec"  | 15   | "gold"    || 463        | 205       | [["cardgame", 15], ["feast", 12], ["dream", 16]]
+        "dec"  | 15   | "platinum"|| 249        | 114       | [["maxflow", 15], ["cardgame", 15], ["haybales", 10]]
     }
 }

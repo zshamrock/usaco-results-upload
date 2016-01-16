@@ -24,7 +24,7 @@ public final class Patterns {
 
     private static final Joiner COMPOSE_ARGS_JOINER = Joiner.on("\\s+");
 
-    public static enum Type {
+    public enum Type {
         CONTEST,
         ALLOWED_PARTICIPANT_NAME
     }
@@ -84,7 +84,7 @@ public final class Patterns {
         final String usaco = "USACO";
         final String year = "(\\d{4})";
         final String month = "(January|February|March|April|May|June|July|August|September|October|November|December|US Open)(?:\\s+Contest)?,";
-        final String division = "(Bronze|Silver|Gold)(?:\\s+Division)?"; // ?: is a non-capturing group
+        final String division = "(Bronze|Silver|Gold|Platinum)(?:\\s+Division)?"; // ?: is a non-capturing group
         return composePattern(finalResults, usaco, year, month, division);
     }
 
