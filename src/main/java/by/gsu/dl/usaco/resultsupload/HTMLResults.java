@@ -56,7 +56,7 @@ public class HTMLResults extends BaseTraceable implements Traceable {
 
     public static final int OBSERVER_YEAR = 9999;
 
-    static enum ParticipantType {
+    enum ParticipantType {
         PRE_COLLEGE,
         OBSERVER
     }
