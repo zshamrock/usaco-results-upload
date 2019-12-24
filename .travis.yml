@@ -3,5 +3,4 @@ language: java
 script: mvn test -Dnetworksourced
 
 jdk:
-  - oraclejdk7
   - oraclejdk8
