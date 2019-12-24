@@ -5,7 +5,7 @@ import spock.lang.Specification
 
 import by.gsu.dl.usaco.resultsupload.trace.Trace
 
-class HTMLResultsSaveToFileSpeck extends Specification {
+class HTMLResultsSaveToFileSpec extends Specification {
     def "save to file"() {
         setup:
         def bronze = getClass().getResource("/feb14_bronze.html").file
