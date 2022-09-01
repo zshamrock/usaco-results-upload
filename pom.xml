@@ -14,7 +14,7 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <java.version>1.6</java.version>
         <lombok.version>1.16.2</lombok.version>
-        <jsoup.version>1.8.1</jsoup.version>
+        <jsoup.version>1.15.3</jsoup.version>
         <!-- See Semantic Versioning http://semver.org/ -->
         <groovy.major.minor.version>2.4</groovy.major.minor.version>
         <spock.version>1.0-groovy-${groovy.major.minor.version}</spock.version>
